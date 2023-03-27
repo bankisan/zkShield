@@ -1,0 +1,2 @@
+*.ptau filter=lfs diff=lfs merge=lfs -text
+*.zkey filter=lfs diff=lfs merge=lfs -text

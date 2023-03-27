@@ -1,0 +1,29 @@
+{
+  "name": "circuits",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@3.4.0",
+  "devDependencies": {
+    "@noble/curves": "^0.8.0",
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.3",
+    "@zk-kit/incremental-merkle-tree": "^1.0.0",
+    "chai": "^4.3.7",
+    "circom_tester": "^0.0.19",
+    "circomlibjs": "^0.1.7",
+    "common": "workspace:*",
+    "mocha": "^10.2.0",
+    "snarkjs": "^0.6.9",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5",
+    "viem": "^0.1.21",
+    "yargs": "^17.7.1"
+  },
+  "scripts": {
+    "build": "sh -c ./scripts/compile.sh && sh -c ./scripts/build.sh",
+    "download:ptau": "mkdir -p ptau && curl -o ptau/powersOfTau28_hez_final_21.ptau https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_21.ptau",
+    "generate:fixtures": "node --loader ts-node/esm --experimental-specifier-resolution=node scripts/generateTestFixtures.ts",
+    "test": "mocha --esm --timeout 180000"
+  }
+}
