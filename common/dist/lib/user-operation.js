@@ -1,4 +1,4 @@
-import { encodeAbiParameters, keccak256, } from 'viem';
+import { encodeAbiParameters, hashMessage, keccak256 } from 'viem';
 import { userOperationAbi } from './types';
 export const DefaultsForUserOp = {
     sender: '0x',
@@ -25,4 +25,7 @@ export const getUserOpHash = (op, entryPoint, chainId) => {
         { type: 'uint256', name: 'chainId' },
     ], [userOpHash, entryPoint, chainId]);
     return keccak256(enc);
+};
+export const personalUserOpHash = (op, entryPoint, chainId) => {
+    return hashMessage(getUserOpHash(op, entryPoint, chainId));
 };

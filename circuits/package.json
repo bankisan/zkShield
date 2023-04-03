@@ -23,7 +23,7 @@
   "scripts": {
     "build": "sh -c ./scripts/compile.sh && sh -c ./scripts/build.sh",
     "download:ptau": "mkdir -p ptau && curl -o ptau/powersOfTau28_hez_final_21.ptau https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_21.ptau",
-    "generate:fixtures": "node --loader ts-node/esm --experimental-specifier-resolution=node scripts/generateTestFixtures.ts",
+    "generate:fixtures": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateTestFixtures.ts",
     "test": "mocha --esm --timeout 180000"
   }
 }

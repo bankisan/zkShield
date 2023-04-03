@@ -1,11 +1,13 @@
-import { encodeAbiParameters, encodeFunctionData, } from 'viem';
+import { encodeAbiParameters, encodeFunctionData } from 'viem';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree';
 import { buildPoseidon } from 'circomlibjs';
 import * as mod from '@noble/curves/abstract/modular';
 import * as utils from '@noble/curves/abstract/utils';
 import { shieldAccountABI } from './generated';
-import { signatureProofsAbi, } from "./types";
+import { signatureProofsAbi } from './types';
+// Adapted from:
+// https://github.com/personaelabs/efficient-zk-ecdsa/tree/main/scripts/utils
 export const REGISTERS = 4n;
 export const STRIDE = 8n;
 export const NUM_STRIDES = 256n / STRIDE; // = 32

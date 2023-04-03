@@ -1,4 +1,4 @@
-import { encodeAbiParameters, keccak256 } from 'viem'
+import { encodeAbiParameters, hashMessage, keccak256 } from 'viem'
 
 import { UserOperation, userOperationAbi } from './types'
 
@@ -39,4 +39,12 @@ export const getUserOpHash = (
     [userOpHash, entryPoint, chainId]
   )
   return keccak256(enc)
+}
+
+export const personalUserOpHash = (
+  op: UserOperation,
+  entryPoint: `0x${string}`,
+  chainId: bigint
+): string => {
+  return hashMessage(getUserOpHash(op, entryPoint, chainId))
 }
