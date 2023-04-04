@@ -1,0 +1,5 @@
+packages:
+  - 'circuits/*'
+  - 'common/*'
+  - 'contracts/**'
+  - 'web/**'
