@@ -4,7 +4,8 @@
   "workspaces": [
     "circuits",
     "common",
-    "contracts"
+    "contracts",
+    "web"
   ],
   "scripts": {
     "generate:contracts": "sh -c scripts/generate-contracts.sh"
