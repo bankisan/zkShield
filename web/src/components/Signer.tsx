@@ -1,13 +1,9 @@
 'use client';
 
 import { generateTestInputs } from '@/utils/generateTestInputs';
-// import { generateCommitProof } from '@/services/snark'
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useSigner } from 'wagmi';
-import { buildPoseidon } from 'circomlibjs';
 import { generateCommitProof } from '@/services/snark';
-
-// generateTestInputs();
 
 export default function Signer() {
   const { data: signer } = useSigner()

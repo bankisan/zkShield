@@ -38,8 +38,13 @@ export interface SnarkJS {
 }
 
 const { groth16 }: SnarkJS = require('snarkjs')
+Promise.all([
+  fetch(VERIFY_SIGNATURE_WASM_PATH),
+  fetch(VERIFY_SIGNATURE_ZKEY_PATH)
+])
 
 type ConvertedInput = Record<string, string | string[] | string[][] | string[][][][]>;
+// Converts bigint to string for snarkjs
 const convertInput = (input: Input): ConvertedInput => {
   return {
     s: input.s.map(String),
