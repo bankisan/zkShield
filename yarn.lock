@@ -4138,6 +4138,8 @@ __metadata:
 "zkShield@workspace:.":
   version: 0.0.0-use.local
   resolution: "zkShield@workspace:."
+  dependencies:
+    snarkjs: ^0.6.9
   languageName: unknown
   linkType: soft
 

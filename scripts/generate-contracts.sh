@@ -12,7 +12,7 @@ for f in $(find ./circuits/dist -name *.zkey); do
   tempfile=$(mktemp -t generated-verifier)
 
 
-  snarkjs zkey export solidityverifier ${f} "${tempfile}"
+  yarn run snarkjs zkey export solidityverifier ${f} "${tempfile}"
 
   # Change the solidity version.
   # Remove the Pairing code.

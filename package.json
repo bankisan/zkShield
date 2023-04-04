@@ -8,5 +8,8 @@
   ],
   "scripts": {
     "generate:contracts": "sh -c scripts/generate-contracts.sh"
+  },
+  "devDependencies": {
+    "snarkjs": "^0.6.9"
   }
 }
