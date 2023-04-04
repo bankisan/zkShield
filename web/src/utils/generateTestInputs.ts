@@ -46,7 +46,12 @@ function assert(condition: boolean, message?: string) {
   }
 }
 
-export const generateInputs = async (userOp?: UserOperation, msgHash?: Uint8Array, sig?: SignatureType) => { 
+export const generateInputs = async (
+  userOp?: UserOperation,
+  publicKey?: Uint8Array,
+  msgHash?: Uint8Array,
+  sig?: SignatureType
+) => { 
   if (!userOp) {
     userOp = DefaultsForUserOp
     userOp.sender = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
@@ -62,7 +67,7 @@ export const generateInputs = async (userOp?: UserOperation, msgHash?: Uint8Arra
 
   const priv = new Uint8Array(32).fill(1)
   const pub = secp256k1.getPublicKey(priv)
-  const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(pub)
+  const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(publicKey ?? pub)
   const secret = 1n
   
   const Qa = [

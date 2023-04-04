@@ -3,12 +3,13 @@
 import { generateInputs } from '@/utils/generateTestInputs';
 import React, { useState, FormEvent, useEffect } from 'react';
 import * as utils from "@noble/curves/abstract/utils"
-import { useSignMessage } from 'wagmi';
+import { useAccount, useSignMessage } from 'wagmi';
 import { generateCommitProof } from '@/services/snark';
 import { UserOperation, executeTransactionData, personalUserOpHash } from 'common';
 import { secp256k1 } from '@noble/curves/secp256k1'
 
 export default function Signer() {
+  const { address } = useAccount();
   const [ msgHash, setMsgHash ] = useState<string>()
   const { signMessageAsync } = useSignMessage({ message: msgHash })
 
@@ -52,7 +53,7 @@ export default function Signer() {
     const msgHash = utils.hexToBytes(hash)
     const signature = await signMessageAsync()
     const sig = secp256k1.Signature.fromCompact(utils.hexToBytes(signature))
-    const input = await generateInputs(userOps, msgHash, sig);
+    const input = await generateInputs(userOps, utils.hexToBytes(address as string), msgHash, sig);
     const commitProof = await generateCommitProof(input)
     const { proof, publicSignals } = commitProof;
     console.log(proof)
