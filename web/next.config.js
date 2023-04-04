@@ -2,7 +2,9 @@
 const nextConfig = {
   experimental: {
     appDir: true,
+    
   },
+  // transpilePackages: ['common']
 }
 
 module.exports = nextConfig

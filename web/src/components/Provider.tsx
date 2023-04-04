@@ -3,21 +3,28 @@
 import { ReactNode } from 'react'
 import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
+import { ConnectKitProvider, getDefaultClient } from "connectkit";
 
-const { provider, webSocketProvider } = configureChains(
+const { chains, provider } = configureChains(
   [mainnet],
-  [publicProvider()],
-)
+  [
+    publicProvider()
+  ]
+);
 
-const client = createClient({
-  provider,
-  webSocketProvider,
-})
+const client = createClient(
+  getDefaultClient({
+    appName: "zkShield",
+    chains,
+  }),
+);
 
 export default function Provider({ children }: { children: ReactNode }) {
   return (
     <WagmiConfig client={client}>
-      {children}
+      <ConnectKitProvider>
+        {children}
+      </ConnectKitProvider>
     </WagmiConfig>
   );
 }
