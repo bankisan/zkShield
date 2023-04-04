@@ -3,6 +3,7 @@
   "packageManager": "yarn@3.4.0",
   "private": true,
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "devDependencies": {
     "@wagmi/cli": "^0.1.13",
