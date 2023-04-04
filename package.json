@@ -1,12 +1,5 @@
 {
   "name": "zkShield",
-  "packageManager": "yarn@3.4.1",
-  "workspaces": [
-    "circuits",
-    "common",
-    "contracts",
-    "web"
-  ],
   "scripts": {
     "generate:contracts": "sh -c scripts/generate-contracts.sh"
   },
