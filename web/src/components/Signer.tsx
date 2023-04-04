@@ -2,9 +2,12 @@
 
 import { generateTestInputs } from '@/utils/generateTestInputs';
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useSigner } from 'wagmi';
 import { generateCommitProof } from '@/services/snark';
 
 export default function Signer() {
+  const { data: signer } = useSigner()
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Submitted:');
