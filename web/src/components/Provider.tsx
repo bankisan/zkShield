@@ -22,9 +22,9 @@ const client = createClient(
 export default function Provider({ children }: { children: ReactNode }) {
   return (
     <WagmiConfig client={client}>
-      <ConnectKitProvider>
+      {/* <ConnectKitProvider> */}
         {children}
-      </ConnectKitProvider>
+      {/* </ConnectKitProvider> */}
     </WagmiConfig>
   );
 }

@@ -2,10 +2,6 @@
 const nextConfig = {
   experimental: {
     appDir: true,
-    externalDir: false,
-    esmExternals: true,
-    externals: true,
-    asyncWebAssembly: true,
   },
   transpilePackages: ['common'],
   webpack: function (config, options) {

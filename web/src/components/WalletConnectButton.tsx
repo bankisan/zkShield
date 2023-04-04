@@ -1,9 +1,11 @@
 'use client';
 
-import { ConnectKitButton } from "connectkit";
+// import { ConnectKitButton } from "connectkit";
 
 export default function WalletConnectButton() {
   return (
-    <ConnectKitButton />
+    <>
+    {/* <ConnectKitButton /> */}
+    </>
   );
 }
