@@ -1,13 +1,16 @@
 'use client';
 
 import { generateInputs } from '@/utils/generateTestInputs';
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import { useSigner } from 'wagmi';
+import React, { useState, FormEvent, useEffect } from 'react';
+import * as utils from "@noble/curves/abstract/utils"
+import { useSignMessage } from 'wagmi';
 import { generateCommitProof } from '@/services/snark';
-import { UserOperation, executeTransactionData } from 'common';
+import { UserOperation, executeTransactionData, personalUserOpHash } from 'common';
+import { secp256k1 } from '@noble/curves/secp256k1'
 
 export default function Signer() {
-  const { data: signer } = useSigner()
+  const [ msgHash, setMsgHash ] = useState<string>()
+  const { signMessageAsync } = useSignMessage({ message: msgHash })
 
   useEffect(() => {
     const testProof = async () => {
@@ -40,7 +43,16 @@ export default function Signer() {
       paymasterAndData: `0x`,
       signature: `0x`
     }
-    const input = await generateInputs(userOps);
+    const hash = personalUserOpHash(
+      userOps,
+      `0xFefC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
+      31337n
+      )
+    setMsgHash(hash)
+    const msgHash = utils.hexToBytes(hash)
+    const signature = await signMessageAsync()
+    const sig = secp256k1.Signature.fromCompact(utils.hexToBytes(signature))
+    const input = await generateInputs(userOps, msgHash, sig);
     const commitProof = await generateCommitProof(input)
     const { proof, publicSignals } = commitProof;
     console.log(proof)

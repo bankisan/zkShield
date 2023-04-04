@@ -1,7 +1,7 @@
 import { secp256k1 } from '@noble/curves/secp256k1'
 import * as mod from '@noble/curves/abstract/modular'
 import * as utils from '@noble/curves/abstract/utils'
-import { ProjPointType } from '@noble/curves/abstract/weierstrass'
+import { ProjPointType, SignatureType } from '@noble/curves/abstract/weierstrass'
 import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 
@@ -46,7 +46,7 @@ function assert(condition: boolean, message?: string) {
   }
 }
 
-export const generateInputs = async (userOp?: UserOperation) => { 
+export const generateInputs = async (userOp?: UserOperation, msgHash?: Uint8Array, sig?: SignatureType) => { 
   if (!userOp) {
     userOp = DefaultsForUserOp
     userOp.sender = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
@@ -60,29 +60,32 @@ export const generateInputs = async (userOp?: UserOperation) => {
     userOp.callGasLimit = 100_000n
   } 
 
-  const hashed = getUserOpHash(
-    userOp,
-    `0xFEfC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
-    31337n,
-  )
-  const msgHash = utils.hexToBytes(hashed.slice(2))
-  
   const priv = new Uint8Array(32).fill(1)
   const pub = secp256k1.getPublicKey(priv)
   const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(pub)
   const secret = 1n
-
+  
   const Qa = [
     ...splitToRegisters(publicKeyPoint.toAffine().x),
     ...splitToRegisters(publicKeyPoint.toAffine().y),
   ]
-
+  
   const nullifier = BigInt(await hasher([...Qa, secret]))
   tree.insert(nullifier)
-
+  
   const { pathIndices, siblings } = tree.createProof(1)
   const root = tree.root
-  const sig = secp256k1.sign(msgHash, priv)
+  if (!msgHash) {
+    const hashed = getUserOpHash(
+      userOp,
+      `0xFEfC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
+      31337n,
+    )
+    msgHash = utils.hexToBytes(hashed.slice(2))
+  }
+  if (!sig) {
+    sig = secp256k1.sign(msgHash, priv)
+  }
 
   const { r, s } = sig
   const m = mod.mod(utils.bytesToNumberBE(msgHash), secp256k1.CURVE.n)
