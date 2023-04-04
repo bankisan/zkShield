@@ -2,6 +2,7 @@
   "name": "zkShield",
   "packageManager": "yarn@3.4.1",
   "workspaces": [
+    "app",
     "circuits",
     "common",
     "contracts"
