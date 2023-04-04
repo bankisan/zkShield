@@ -1,5 +1,6 @@
 import { VERIFY_SIGNATURE_WASM_PATH, VERIFY_SIGNATURE_ZKEY_PATH } from '@/config'
 
+/// Input for the snarkjs proof generation (in utils)
 export interface Input {
     s: bigint[];
     TPreComputes: bigint[][][][];
@@ -9,6 +10,7 @@ export interface Input {
     siblings: number[];
 }
 
+/// Proof output from the snarkjs proof generation
 export interface Proof {
   pi_a: [string, string, string]
   pi_b: [[string, string], [string, string]]
@@ -21,6 +23,7 @@ export interface Proof {
   nullifier: string
 }
 
+/// SnarkJS interface
 export interface SnarkJS {
   groth16: {
     fullProve(
@@ -37,14 +40,15 @@ export interface SnarkJS {
   }
 }
 
+/// Fetches the wasm and zkey files + imports snarkjs
 const { groth16 }: SnarkJS = require('snarkjs')
 Promise.all([
   fetch(VERIFY_SIGNATURE_WASM_PATH),
   fetch(VERIFY_SIGNATURE_ZKEY_PATH)
 ])
 
+/// Converts bigint to string for snarkjs
 type ConvertedInput = Record<string, string | string[] | string[][] | string[][][][]>;
-// Converts bigint to string for snarkjs
 const convertInput = (input: Input): ConvertedInput => {
   return {
     s: input.s.map(String),
@@ -56,6 +60,7 @@ const convertInput = (input: Input): ConvertedInput => {
   };
 };
 
+/// Generates a snarkjs proof
 export const generateCommitProof = async (
   input: Input
 ) => {
