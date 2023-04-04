@@ -2,7 +2,7 @@ import { secp256k1 } from '@noble/curves/secp256k1'
 import * as mod from '@noble/curves/abstract/modular'
 import * as utils from '@noble/curves/abstract/utils'
 import { ProjPointType } from '@noble/curves/abstract/weierstrass'
-import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, splitToRegisters, hasher, getUserOpHash } from 'common';
+import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 
 let tree: IncrementalMerkleTree
@@ -46,17 +46,19 @@ function assert(condition: boolean, message?: string) {
   }
 }
 
-export const generateTestInputs = async () => { 
-  const userOp = DefaultsForUserOp
-  userOp.sender = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
-  userOp.verificationGasLimit = 2_000_000n
-  userOp.callData = executeTransactionData({
-    target: `0x1111111111111111111111111111111111111111`,
-    value: 1_000_000_000n,
-    payload: `0x`,
-    delegate: false,
-  })
-  userOp.callGasLimit = 100_000n
+export const generateInputs = async (userOp?: UserOperation) => { 
+  if (!userOp) {
+    userOp = DefaultsForUserOp
+    userOp.sender = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
+    userOp.verificationGasLimit = 2_000_000n
+    userOp.callData = executeTransactionData({
+      target: `0x1111111111111111111111111111111111111111`,
+      value: 1_000_000_000n,
+      payload: `0x`,
+      delegate: false,
+    })
+    userOp.callGasLimit = 100_000n
+  } 
 
   const hashed = getUserOpHash(
     userOp,
