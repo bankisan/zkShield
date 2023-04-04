@@ -16,5 +16,9 @@
     "build": "(rm -rf ./dist ||  true) && yarn generate:contracts && tsc",
     "generate:contracts": "wagmi generate",
     "ts:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@noble/curves": "^0.8.0",
+    "@zk-kit/incremental-merkle-tree": "^1.0.0"
   }
 }

@@ -44,12 +44,17 @@ importers:
 
   common:
     specifiers:
+      '@noble/curves': ^0.8.0
       '@wagmi/cli': ^0.1.13
+      '@zk-kit/incremental-merkle-tree': ^1.0.0
       circomlibjs: ^0.1.7
       snarkjs: ^0.6.9
       ts-node: ^10.9.1
       typescript: ^4.9.5
       viem: ^0.1.21
+    dependencies:
+      '@noble/curves': 0.8.3
+      '@zk-kit/incremental-merkle-tree': 1.0.0
     devDependencies:
       '@wagmi/cli': 0.1.14_typescript@4.9.5
       circomlibjs: 0.1.7
@@ -842,7 +847,6 @@ packages:
     resolution: {integrity: sha512-OqaOf4RWDaCRuBKJLDURrgVxjLmneGsiCXGuzYB5y95YithZMA6w4uk34DHSm0rKMrrYiaeZj48/81EvaAScLQ==}
     dependencies:
       '@noble/hashes': 1.3.0
-    dev: true
 
   /@noble/ed25519/1.7.3:
     resolution: {integrity: sha512-iR8GBkDt0Q3GyaVcIu7mSsVIqnFbkbRzGLWlvhwunacoLwt4J3swfKhfaM6rN6WY+TBGoYT1GtT1mIh2/jGbRQ==}
@@ -1827,7 +1831,6 @@ packages:
 
   /@zk-kit/incremental-merkle-tree/1.0.0:
     resolution: {integrity: sha512-2iRLZfHnZ6wKE+oZN2CnpkKYCE5f5dpv6YRIwLDCz0xwJZrIMQ81AamFBdxPesQSYMMP0GkC0iv1rm6gxAL2Ow==}
-    dev: true
 
   /JSONStream/1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
