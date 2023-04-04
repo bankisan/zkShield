@@ -1,9 +1,14 @@
 {
   "name": "zkShield",
+  "packageManager": "yarn@3.4.1",
+  "workspaces": [
+    "app",
+    "circuits",
+    "common",
+    "contracts"
+  ],
   "scripts": {
-    "generate:contracts": "sh -c scripts/generate-contracts.sh"
-  },
-  "devDependencies": {
-    "snarkjs": "^0.6.9"
+    "generate:contracts": "sh -c scripts/generate-contracts.sh",
+    "generate:fixtures": "yarn workspace circuits generate:fixtures && mv circuits/fixtures/* contracts/test/fixtures && rmdir circuits/fixtures"
   }
 }

@@ -5,11 +5,16 @@ import { ProjPointType } from '@noble/curves/abstract/weierstrass'
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 
 import { assert } from 'console'
-import { writeFile } from 'fs'
+import { mkdir, writeFile } from 'fs/promises'
 import { groth16 } from 'snarkjs'
 import { encodeFunctionData } from 'viem'
 
-import { executeTransactionData, SignatureProof, UserOperation } from 'common'
+import {
+  executeTransactionData,
+  personalUserOpHash,
+  SignatureProof,
+  UserOperation,
+} from 'common'
 import * as pkg from 'common'
 const {
   DefaultsForUserOp,
@@ -17,7 +22,6 @@ const {
   createTree,
   encodeSignature,
   shieldAccountABI,
-  getUserOpHash,
   hasher,
   splitToRegisters,
   toBigInts,
@@ -45,19 +49,51 @@ const toJson = <T extends Object>(data: T) => {
   ).replace(/"(-?\d+)#bigint"/g, (_, a) => a)
 }
 
-// const signers: Signer[] = []
+const defaultSender: `0x${string}` = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
+const defaultUserOp = {
+  ...DefaultsForUserOp,
+  sender: defaultSender,
+  verificationGasLimit: 2_000_000n,
+}
+const fixtures: Record<string, UserOperation> = {
+  default: defaultUserOp,
+  transfer: {
+    ...defaultUserOp,
+    callData: executeTransactionData({
+      target: `0x1111111111111111111111111111111111111111`,
+      value: 1_000_000_000n,
+      payload: `0x`,
+      delegate: false,
+    }),
+  },
+  root: {
+    ...defaultUserOp,
+    callData: encodeFunctionData({
+      abi: shieldAccountABI,
+      args: [
+        `0x1111111111111111111111111111111111111111111111111111111111111111`,
+      ],
+      functionName: 'updateRoot',
+    }),
+  },
+  signers: {
+    ...defaultUserOp,
+    callData: encodeFunctionData({
+      abi: shieldAccountABI,
+      args: [1n],
+      functionName: 'updateRequiredSigners',
+    }),
+  },
+}
 
-const userOp = DefaultsForUserOp
-userOp.sender = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
-userOp.verificationGasLimit = 2_000_000n
-userOp.callData = executeTransactionData({
-  target: `0x1111111111111111111111111111111111111111`,
-  value: 1_000_000_000n,
-  payload: `0x`,
-  delegate: false,
-})
+console.log('Generating test fixtures...')
+console.log('Takes a couple minutes ☕️')
 
-const signUserOp = async (userOp: UserOperation, numberOfSigners: number) => {
+const createFixture = async (
+  userOp: UserOperation,
+  fixtureName: string,
+  numberOfSigners: number,
+) => {
   const signers: Signer[] = []
 
   let tree: IncrementalMerkleTree
@@ -65,7 +101,7 @@ const signUserOp = async (userOp: UserOperation, numberOfSigners: number) => {
 
   userOp.callGasLimit = 100_000n
 
-  const hashed = getUserOpHash(
+  const hashed = personalUserOpHash(
     userOp,
     `0xFEfC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
     31337n,
@@ -202,11 +238,20 @@ const signUserOp = async (userOp: UserOperation, numberOfSigners: number) => {
 
   const { proofs: _, ...reducedFixture } = output
 
-  const fixtureName = 'fixtures-transfer-test'
-  console.log('Writing file')
-  writeFile(`${fixtureName}.json`, toJson(reducedFixture), 'utf8', () => {})
-  writeFile(`${fixtureName}.debug.json`, toJson(output), 'utf8', () => {})
-  console.log('DONE!')
+  console.log('Writing file:', fixtureName)
+  await writeFile(
+    `fixtures/${fixtureName}.json`,
+    toJson(reducedFixture),
+    'utf8',
+  )
+  await writeFile(`fixtures/${fixtureName}.debug.json`, toJson(output), 'utf8')
+  console.log('DONE', fixtureName)
 }
 
-signUserOp(userOp, 3)
+await mkdir('fixtures/', { recursive: true })
+await Promise.all(
+  Object.entries(fixtures).map(([fixtureName, userOp]) =>
+    createFixture(userOp, fixtureName, 3),
+  ),
+)
+process.exit()

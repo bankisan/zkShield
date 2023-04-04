@@ -3592,3 +3592,4 @@ export declare const verifySignatureVerifierABI: readonly [{
         readonly type: "bool";
     }];
 }];
+//# sourceMappingURL=generated.d.ts.map

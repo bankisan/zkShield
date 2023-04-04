@@ -148,10 +148,12 @@ contract ShieldAccount is BaseAccount {
             revert ShieldErrors.RequiredSignersNotSatisfied();
         }
 
+        bytes32 signedHash = getEthSignedMessageHash(userOpHash);
+
         for (uint256 i; i < proofsLength; ++i) {
             uint256 j = i + 1;
             SignatureProof memory proof = proofs[i];
-            if (!verifyProof(proof, userOpHash)) {
+            if (!verifyProof(proof, signedHash)) {
                 revert ShieldErrors.InvalidSignature();
             }
 
@@ -164,6 +166,17 @@ contract ShieldAccount is BaseAccount {
         }
 
         return 0;
+    }
+
+    function getEthSignedMessageHash(bytes32 hash)
+        public
+        pure
+        returns (bytes32)
+    {
+        return
+            keccak256(
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+            );
     }
 
     modifier onlyEntryPoint() {

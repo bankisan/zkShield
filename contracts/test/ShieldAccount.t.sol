@@ -106,7 +106,10 @@ contract ShieldAccountTest is Test {
         });
 
         bytes32 hash = entryPoint.getUserOpHash(fixture.userOp);
-        assertEq(hash, fixture.msg, "Not the correct hash");
+        bytes32 signedHash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+        );
+        assertEq(signedHash, fixture.msg, "Not the correct hash");
 
         // Extract the SignatureProof structs using the extractSignatureProofs function
         bytes memory call = abi.encodeCall(shieldAccount.root, ());
