@@ -116,7 +116,7 @@ const powMod = (base: bigint, exponent: bigint, modulus: bigint): bigint => {
   return result;
 }
 
-export const publicKeyToProjectivePoint = (publicKey: string) => {
+export const publicKeyToProjectivePoint = (publicKey: string): ProjPointType<bigint> => {
   const addressBytes = utils.hexToBytes(publicKey.slice(2))
   const prefixBytes = Uint8Array.from([0x04])
   const publicKeyBytes = Uint8Array.from([...prefixBytes, ...addressBytes])
