@@ -87,12 +87,25 @@ const powMod = (base, exponent, modulus) => {
     }
     return result;
 };
-export const publicKeyToProjectivePoint = (publicKey) => {
+export const publicKeyToAddress = (publicKey) => {
+    // Convert hex string to Uint8Array
+    const publicKeyWithPrefix = new Uint8Array(publicKey.length + 1);
+    publicKeyWithPrefix.set([0x04], 0);
+    publicKeyWithPrefix.set(publicKey, 1);
+    // Hash publicKeyWithPrefix using Keccak-256
+    const hash = keccak256(publicKeyWithPrefix);
+    // Take last 20 bytes of hash as Ethereum address
+    const address = hash.slice(-20);
+    // Concatenate 0x prefix with hexadecimal representation of address
+    const addr = '0x' + Buffer.from(address).toString('hex');
+    return addr;
+};
+export const addressToProjectivePoint = (publicKey) => {
     const addressBytes = utils.hexToBytes(publicKey.slice(2));
     const prefixBytes = Uint8Array.from([0x04]);
     const publicKeyBytes = Uint8Array.from([...prefixBytes, ...addressBytes]);
     const hashedBytes = keccak256(publicKeyBytes);
-    const x = BigInt(`0x${hashedBytes.slice(2, 34)}`);
+    const x = BigInt(hashedBytes);
     // Calculate y-coordinate using secp256k1 curve equation
     const ySquared = (x ** 3n + 7n) % secp256k1.CURVE.Fp.ORDER;
     const y = powMod(ySquared, (secp256k1.CURVE.Fp.ORDER + 1n) / 4n, secp256k1.CURVE.Fp.ORDER);
@@ -104,5 +117,5 @@ export const publicKeyToProjectivePoint = (publicKey) => {
     else {
         yCoord = secp256k1.CURVE.Fp.ORDER - y;
     }
-    return new secp256k1.ProjectivePoint(x, yCoord, BigInt(hashedBytes) % 2n === 0n ? 27n : 28n);
+    return new secp256k1.ProjectivePoint(x, yCoord, BigInt(hashedBytes) % 2n === 0n ? 0n : 1n);
 };

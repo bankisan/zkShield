@@ -12,5 +12,6 @@ export declare const calculatePrecomputes: (point: ProjPointType<bigint>) => big
 export declare const hasher: (inputs: bigint[]) => Promise<bigint>;
 export declare const createTree: (depth: number, zeroValue: bigint, arity?: number) => Promise<IncrementalMerkleTree>;
 export declare const executeTransactionData: (tx: Transaction) => `0x${string}`;
-export declare const publicKeyToProjectivePoint: (publicKey: string) => ProjPointType<bigint>;
+export declare const publicKeyToAddress: (publicKey: Uint8Array) => string;
+export declare const addressToProjectivePoint: (publicKey: string) => ProjPointType<bigint>;
 //# sourceMappingURL=signature-proof.d.ts.map
