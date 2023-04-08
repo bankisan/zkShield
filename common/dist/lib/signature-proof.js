@@ -1,6 +1,8 @@
 import { encodeAbiParameters, encodeFunctionData, keccak256 } from 'viem';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree';
+import { keccak_256 } from '@noble/hashes/sha3';
+import { bytesToHex } from '@noble/hashes/utils';
 import { buildPoseidon } from 'circomlibjs';
 import * as mod from '@noble/curves/abstract/modular';
 import * as utils from '@noble/curves/abstract/utils';
@@ -88,20 +90,13 @@ const powMod = (base, exponent, modulus) => {
     return result;
 };
 export const publicKeyToAddress = (publicKey) => {
-    // Convert hex string to Uint8Array
-    const publicKeyWithPrefix = new Uint8Array(publicKey.length + 1);
-    publicKeyWithPrefix.set([0x04], 0);
-    publicKeyWithPrefix.set(publicKey, 1);
-    // Hash publicKeyWithPrefix using Keccak-256
-    const hash = keccak256(publicKeyWithPrefix);
-    // Take last 20 bytes of hash as Ethereum address
-    const address = hash.slice(-20);
-    // Concatenate 0x prefix with hexadecimal representation of address
-    const addr = '0x' + Buffer.from(address).toString('hex');
+    const pub = secp256k1.ProjectivePoint.fromHex(publicKey).toRawBytes(false);
+    console.log(pub);
+    const addr = "0x" + bytesToHex(keccak_256(pub.subarray(1, 65))).slice(24);
     return addr;
 };
-export const addressToProjectivePoint = (publicKey) => {
-    const addressBytes = utils.hexToBytes(publicKey.slice(2));
+export const addressToProjectivePoint = (address) => {
+    const addressBytes = utils.hexToBytes(address.slice(2));
     const prefixBytes = Uint8Array.from([0x04]);
     const publicKeyBytes = Uint8Array.from([...prefixBytes, ...addressBytes]);
     const hashedBytes = keccak256(publicKeyBytes);

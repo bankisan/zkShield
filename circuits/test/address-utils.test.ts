@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import { secp256k1 } from '@noble/curves/secp256k1'
-import { publicKeyToAddress, addressToProjectivePoint } from "../lib"
 
-
+import * as pkg from 'common'
+const { publicKeyToAddress, addressToProjectivePoint } = pkg
 
 describe('Recover address', () => {
     it('should correctly recover address on curve', async () => {
