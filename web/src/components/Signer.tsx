@@ -42,7 +42,7 @@ export default function Signer() {
   //   testProof()
   // }, [])
 
-  const handleSign = () => {
+  const handleHash = () => {
     const hashed = personalUserOpHash(
       userOp,
       `0xFefC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
@@ -68,7 +68,7 @@ export default function Signer() {
   return (
     <div className="flex flex-col container">
       <h1>{msgHash}</h1>
-      <button onClick={handleSign}>Sign</button>
+      <button onClick={handleHash}>Hash</button>
       <button onClick={handleProve}>Prove</button>
     </div>
   );
