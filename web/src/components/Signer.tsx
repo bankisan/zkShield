@@ -1,16 +1,19 @@
 'use client';
 
 import { generateInputs } from '@/utils/generateInputs';
-import React, { useState, FormEvent, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as utils from "@noble/curves/abstract/utils"
 import { useAccount, useSignMessage } from 'wagmi';
-import { generateCommitProof } from '@/services/snark';
+import { Proof, generateCommitProof } from '@/services/snark';
 import { UserOperation, executeTransactionData, personalUserOpHash } from 'common';
 import { secp256k1 } from '@noble/curves/secp256k1'
 
 export default function Signer() {
   const { address } = useAccount();
-  const [ msgHash, setMsgHash ] = useState<Uint8Array>()
+  const [msgHash, setMsgHash] = useState<Uint8Array>()
+  const [proof, setProof] = useState<Proof>()
+  const [publicSignals, setPublicSignals] = useState<string[]>([])
+  const [isProving, setIsProving] = useState<boolean>(false)
   const { signMessageAsync } = useSignMessage({ message: msgHash })
 
   const userOp: UserOperation = {
@@ -31,16 +34,15 @@ export default function Signer() {
     paymasterAndData: `0x`,
     signature: `0x`
   }
-  // useEffect(() => {
-  //   const testProof = async () => {
-  //     const inputs = await generateInputs();
-  //     const commitProof = await generateCommitProof(inputs)
-  //     const { proof, publicSignals } = commitProof
-  //     console.log(proof)
-  //     console.log(publicSignals)
-  //   }
-  //   testProof()
-  // }, [])
+
+  useEffect(() => {
+    const testProof = async () => {
+      const inputs = await generateInputs();
+      const commitProof = await generateCommitProof(inputs)
+      const { proof, publicSignals } = commitProof
+    }
+    testProof()
+  }, [])
 
   const handleHash = () => {
     const hashed = personalUserOpHash(
@@ -59,15 +61,27 @@ export default function Signer() {
     console.log(signatureBytes)
     const sig = secp256k1.Signature.fromCompact(signatureBytes)
     const input = await generateInputs(userOp, address, msgHash, sig);
+    setIsProving(true)
+    console.log('proving...')
     const commitProof = await generateCommitProof(input)
     const { proof, publicSignals } = commitProof;
+    console.log('proof completed !')
     console.log(proof)
     console.log(publicSignals)
+    setProof(proof)
+    setPublicSignals(publicSignals)
+    setIsProving(false)
   }
 
   return (
     <div className="flex flex-col container">
       <h1>{msgHash}</h1>
+      <h1>{proof && JSON.stringify(proof, (key, value) =>
+        typeof value === 'bigint'
+            ? value.toString()
+          : value)}</h1>
+      <h1>{publicSignals.length > 0 && JSON.stringify(publicSignals)}</h1>
+      {isProving && <h3>Proving...</h3>}
       <button onClick={handleHash}>Hash</button>
       <button onClick={handleProve}>Prove</button>
     </div>
