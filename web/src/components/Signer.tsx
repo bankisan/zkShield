@@ -58,11 +58,15 @@ export default function Signer() {
     const signatureBytes = utils.hexToBytes(signature.slice(4))
     console.log(signatureBytes)
     const sig = secp256k1.Signature.fromCompact(signatureBytes)
-    const input = await generateInputs(userOp, utils.hexToBytes(address?.slice(2) as string), msgHash, sig);
-    const commitProof = await generateCommitProof(input)
-    const { proof, publicSignals } = commitProof;
-    console.log(proof)
-    console.log(publicSignals)
+    console.log(sig)
+    /// convert address public key to full bytes
+    // const addressBytes = utils.hexToBytes(address?.slice(2) as string);
+    // const addressBytes = secp256k1.PublicKey.fromHex(address?.slice(2) as string).toBytes()
+    // const input = await generateInputs(userOp, addressBytes, msgHash, sig);
+    // const commitProof = await generateCommitProof(input)
+    // const { proof, publicSignals } = commitProof;
+    // console.log(proof)
+    // console.log(publicSignals)
   }
 
   return (
