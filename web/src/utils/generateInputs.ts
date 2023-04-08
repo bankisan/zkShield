@@ -2,7 +2,7 @@ import { secp256k1 } from '@noble/curves/secp256k1'
 import * as mod from '@noble/curves/abstract/modular'
 import * as utils from '@noble/curves/abstract/utils'
 import { ProjPointType, SignatureType } from '@noble/curves/abstract/weierstrass'
-import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
+import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, publicKeyToProjectivePoint, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 
 let tree: IncrementalMerkleTree
@@ -48,7 +48,7 @@ function assert(condition: boolean, message?: string) {
 
 export const generateInputs = async (
   userOp?: UserOperation,
-  publicKey?: Uint8Array,
+  publicKey?: string,
   msgHash?: Uint8Array,
   sig?: SignatureType
 ) => { 
@@ -67,7 +67,7 @@ export const generateInputs = async (
 
   const priv = new Uint8Array(32).fill(1)
   const pub = secp256k1.getPublicKey(priv)
-  const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(publicKey ?? pub)
+  const publicKeyPoint = publicKey ? publicKeyToProjectivePoint(publicKey) : secp256k1.ProjectivePoint.fromHex(pub);
   const secret = 1n
   
   const Qa = [
