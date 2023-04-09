@@ -17,7 +17,7 @@
     "@zk-kit/incremental-merkle-tree": "^1.0.0",
     "autoprefixer": "10.4.14",
     "circomlibjs": "^0.1.7",
-    "common": "1.0.0",
+    "common": "workspace:*",
     "connectkit": "^1.2.2",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
