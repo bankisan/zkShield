@@ -1,6 +1,7 @@
 import { secp256k1 } from '@noble/curves/secp256k1'
 import * as mod from '@noble/curves/abstract/modular'
 import * as utils from '@noble/curves/abstract/utils'
+import { hexToNumber, hexToBigInt } from 'viem'
 import { ProjPointType, SignatureType } from '@noble/curves/abstract/weierstrass'
 import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, addressToProjectivePoint, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
@@ -48,7 +49,7 @@ function assert(condition: boolean, message?: string) {
 
 export const generateInputs = async (
   userOp?: UserOperation,
-  publicKey?: string,
+  nullifierSig?: `0x${string}`,
   msgHash?: Uint8Array,
   sig?: SignatureType
 ) => { 
@@ -66,9 +67,21 @@ export const generateInputs = async (
   } 
 
   const priv = new Uint8Array(32).fill(1)
-  const pub = secp256k1.getPublicKey(priv)
-  const publicKeyPoint = publicKey ? addressToProjectivePoint(publicKey) : secp256k1.ProjectivePoint.fromHex(pub);
-  const secret = 1n
+  let pub;
+  if (nullifierSig) {
+    const v = hexToNumber(`0x${nullifierSig.slice(130)}`)
+    pub = secp256k1.Signature.fromCompact(
+        nullifierSig.substring(2, 130),
+      )
+        .addRecoveryBit(v - 27)
+        .recoverPublicKey(nullifierSig.substring(2))
+        .toHex(true)
+  } else {
+    pub = secp256k1.getPublicKey(priv)
+  }
+
+  const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(pub);
+  const secret = nullifierSig ? hexToBigInt(nullifierSig) : 1n;
   
   const Qa = [
     ...splitToRegisters(publicKeyPoint.toAffine().x),

@@ -51,7 +51,7 @@ export const initialValues: FormItems = {
   signature: `0x`
 };
 
-export const message = "Please sign the following in your wallet.";
+export const message = "Hello, this is your super secure password signature.\n\nDo not sign this message anywhere else outside of zkshield.io!!!";
 
 export default function Home() {
   const { address } = useAccount();
@@ -100,7 +100,7 @@ export default function Home() {
     /// first byte is v - 27 or 28, which is not part of the signature, hence slice(4)
     const signatureBytes = utils.hexToBytes(formData.signature.slice(4))
     const sig = secp256k1.Signature.fromCompact(signatureBytes)
-    const input = await generateInputs(refinedUserOp, address, messageHash, sig);
+    const input = await generateInputs(refinedUserOp, formData.nullifier as `0x${string}`, messageHash, sig);
     const commitProof = await generateCommitProof(input)
     console.log('proving...')
     const { proof, publicSignals } = commitProof;
