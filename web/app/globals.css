@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
+
+.border {
+    background-clip: padding-box;
+}
+
 @tailwind utilities;
