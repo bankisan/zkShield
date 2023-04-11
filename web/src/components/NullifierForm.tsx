@@ -1,19 +1,13 @@
-import { useSignMessage } from "wagmi";
 import FormWrapper from "./FormWrapper";
-import { Button } from "./ui/button";
-import { FormItems, initialValues } from "@/app/page";
+import { FormItems } from "@/app/page";
 import { message } from "@/app/page";
 
-type StepProps = FormItems & {
-  updateForm: (fieldToUpdate: Partial<FormItems>) => void;
-  errors: Partial<FormItems>;
-};
+type StepProps = FormItems;
 
-const SignatureForm = ({ signature, updateForm }: StepProps) => {
-
+const NullifierForm = ({ nullifier }: StepProps) => {
   return (
     <FormWrapper
-      title="Signature"
+      title="Nullifier"
       description="Please sign the following in your wallet."
     >
       <div className="">
@@ -28,16 +22,12 @@ const SignatureForm = ({ signature, updateForm }: StepProps) => {
         </div>
         <div className="flex justify-between items-center my-4 px-4">
           <p className="text-neutral-400 break-all">
-            {signature}
+            {nullifier}
           </p>
         </div>
-        {signature === initialValues.signature &&
-          <Button size="lg" variant="destructive" className="mt-8">
-          Sign
-        </Button>}
       </div>
     </FormWrapper>
   );
 };
 
-export default SignatureForm;
+export default NullifierForm;

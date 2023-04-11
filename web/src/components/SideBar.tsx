@@ -42,7 +42,7 @@ const SideBar = ({ currentStepIndex, goTo }: NavProps) => {
               <div
                 className={cn("text-[#E7B8FF]", currentStepIndex === 1 ? "underline" : "text-white")}
               >
-                Signature
+                Nullifier
               </div>
             </button>
           </li>
@@ -78,7 +78,7 @@ const SideBar = ({ currentStepIndex, goTo }: NavProps) => {
               <div
                 className={cn("text-[#6fe79f]", currentStepIndex === 3 ? "underline" : "text-white")}
               >
-                Summary
+                Prover
               </div>
             </button>
           </li>

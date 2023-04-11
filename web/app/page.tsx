@@ -1,27 +1,35 @@
 /// Code from: https://github.com/Marcosfitzsimons/multi-step-form/blob/15eb077bebb80ce60827ffcd7b29065c95010aa2/app/page.tsx#
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { AnimatePresence } from "framer-motion";
-import SignatureForm from "@/components/SignatureForm";
+import ProverForm from "@/components/ProverForm";
+import SignatureForm from "@/components/NullifierForm";
 import SignInForm from "@/components/SignInForm";
 import UserOpForm from "@/components/UserOpForm";
 import SuccessMessage from "@/components/SuccessMessage";
 import SideBar from "@/components/SideBar";
+import { secp256k1 } from '@noble/curves/secp256k1'
+import * as utils from "@noble/curves/abstract/utils"
+import { generateInputs } from '@/utils/generateInputs';
+import { Proof, generateCommitProof } from '@/services/snark';
 import { useAccount, useSignMessage } from 'wagmi';
-import { UserOperation } from "common";
+import { UserOperation, executeTransactionData, personalUserOpHash } from 'common';
 
 export type CallData = {
-  target: string;
+  target: `0x${string}`;
   value: bigint;
-  payload: string;
+  payload: `0x${string}`;
   delegate: boolean;
 };
 
 export type FormItems = Omit<UserOperation, "callData"> & {
   callData: CallData;
+  nullifier?: string;
+  proof?: Proof;
+  publicSignals?: string[];
 }
 
 export const initialValues: FormItems = {
@@ -47,6 +55,7 @@ export const message = "Please sign the following in your wallet.";
 
 export default function Home() {
   const { address } = useAccount();
+  const [messageHash, setMessageHash] = useState<Uint8Array>(new TextEncoder().encode(message));
   const [formData, setFormData] = useState(initialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const {
@@ -55,11 +64,51 @@ export default function Home() {
     currentStepIndex,
     isFirstStep,
     isLastStep,
-    steps,
     goTo,
     showSuccessMsg,
   } = useMultiStepForm(4);
-  const { signMessageAsync } = useSignMessage({ message });
+  const { signMessageAsync } = useSignMessage({ message: messageHash });
+
+  // Initial run to test proof generation and warm up the prover wasm.
+  useEffect(() => {
+    const testProof = async () => {
+      const inputs = await generateInputs();
+      const commitProof = await generateCommitProof(inputs)
+      const { proof, publicSignals } = commitProof
+      console.log({ proof, publicSignals })
+    }
+    testProof()
+  }, [])
+
+  const handleHash = async () => {
+    const { callData, proof: _, publicSignals: __, ...userOp } = formData;
+    const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
+
+    const hashed = personalUserOpHash(
+      refinedUserOp,
+      `0xFefC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
+      31337n
+    )
+    const messageHash = utils.hexToBytes(hashed.slice(2))
+    setMessageHash(messageHash)
+  }
+
+  const handleProve = async () => { 
+    const { callData, proof: _, publicSignals: __, ...userOp } = formData;
+    const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
+    // const signature = await signMessageAsync()
+    /// first byte is v - 27 or 28, which is not part of the signature, hence slice(4)
+    const signatureBytes = utils.hexToBytes(formData.signature.slice(4))
+    const sig = secp256k1.Signature.fromCompact(signatureBytes)
+    const input = await generateInputs(refinedUserOp, address, messageHash, sig);
+    const commitProof = await generateCommitProof(input)
+    console.log('proving...')
+    const { proof, publicSignals } = commitProof;
+    console.log('proof completed !')
+    console.log(proof)
+    console.log(publicSignals)
+    setFormData({ proof, publicSignals, ...formData})
+  }
 
   async function updateForm(fieldToUpdate: Partial<FormItems>) {
     const { callGasLimit, signature, maxPriorityFeePerGas } = fieldToUpdate;
@@ -105,22 +154,39 @@ export default function Home() {
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Don't go to next step if there are errors
+    if (Object.values(errors).some((error) => error)) {
+      console.error(errors)
+      return;
+    }
     // Don't go to next step if user is not connected to wallet
     if (isFirstStep && !address) {
       return;
     }
-    // Don't go to next step if user has not signed message
-    if (currentStepIndex === 1 && formData.signature === initialValues.signature) { 
+    // Don't go to next step if user has not set nullifier
+    if (currentStepIndex === 1 && !formData.nullifier) { 
       // Sign message
       const message = await signMessageAsync();
       if (message) {
-        updateForm({ signature: message });
+        updateForm({ nullifier: message });
       }
       return;
     }
-    // Don't go to next step if there are errors
-    if (Object.values(errors).some((error) => error)) {
-      console.error(errors)
+    // Don't go to next step if user has not signed message
+    if (currentStepIndex === 2) { 
+      await handleHash()
+    }
+    // Don't go to next step if user has not generated proof
+    if (isLastStep && !formData.proof && !formData.publicSignals) {
+      if (formData.signature === initialValues.signature) {
+        // Sign message
+        const message = await signMessageAsync();
+        if (message) {
+          updateForm({ signature: message });
+        }
+      } else {
+        await handleProve();
+      }
       return;
     }
     nextStep();
@@ -158,8 +224,7 @@ export default function Home() {
               {currentStepIndex === 1 && (
                 <SignatureForm key="step2" 
                   {...formData}
-                  updateForm={updateForm}
-                  errors={errors} />
+                />
               )}
               {currentStepIndex === 2 && (
                 <UserOpForm key="step3"
@@ -168,9 +233,11 @@ export default function Home() {
                   errors={errors}
                 />
               )}
-              {/* {currentStepIndex === 3 && (
-                <SignInForm key="step4" {...formData} goTo={goTo} />
-              )} */}
+              {currentStepIndex === 3 && (
+                <ProverForm key="step4" 
+                  {...formData}
+                />
+              )}
             </AnimatePresence>
             <div className="w-full items-center flex justify-between">
               <div className="">
@@ -193,7 +260,7 @@ export default function Home() {
                     type="submit"
                     className="relative text-neutral-200 bg-neutral-900 border border-black/20 shadow-input shadow-black/10 rounded-xl hover:text-white"
                   >
-                    {isLastStep ? "Confirm" : "Next Step"}
+                    {isLastStep && formData.proof && formData.publicSignals ? "Confirm" : "Next Step"}
                   </Button>
                 </div>
               </div>
