@@ -34,9 +34,8 @@ const SuccessMessage = () => {
         Thank you!
       </h4>
       <p className="text-sm max-w-md text-neutral-300 md:text-base">
-        Thanks for confirming your subscription! We hope you have fun using our
-        plataform. If you ever need support, please feel free to email us at
-        support@loremgaming.com
+        You have successfully proved your zkShield transaction.
+        Congratulations!
       </p>
       <div className="flex items-center mt-6">
         <div className="relative after:pointer-events-none after:absolute after:inset-px after:rounded-[11px] after:shadow-highlight after:shadow-white/10 focus-within:after:shadow-[#77f6aa] after:transition">
