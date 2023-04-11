@@ -238,7 +238,7 @@ export default function Home() {
               )}
               {currentStepIndex === 3 && (
                 <ProverForm key="step4"
-                  isProving={true}
+                  isProving={isProving}
                   {...formData}
                 />
               )}
