@@ -57,6 +57,7 @@ export default function Home() {
   const { address } = useAccount();
   const [messageHash, setMessageHash] = useState<Uint8Array>(new TextEncoder().encode(message));
   const [formData, setFormData] = useState(initialValues);
+  const [isProving, setIsProving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const {
     previousStep,
@@ -185,7 +186,9 @@ export default function Home() {
           updateForm({ signature: message });
         }
       } else {
+        setIsProving(true);
         await handleProve();
+        setIsProving(false);
       }
       return;
     }
@@ -234,7 +237,8 @@ export default function Home() {
                 />
               )}
               {currentStepIndex === 3 && (
-                <ProverForm key="step4" 
+                <ProverForm key="step4"
+                  isProving={true}
                   {...formData}
                 />
               )}

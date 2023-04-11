@@ -14,7 +14,7 @@ const NullifierForm = ({ nullifier }: StepProps) => {
         <div className="bg-neutral-900 p-4 mt-2 rounded-md border border-neutral-700">
           <div className="flex justify-between items-center">
             <div className="">
-              <h4 className="font-semibold text-white md:text-lg">
+              <h4 className="font-semibold text-white md:text-lg whitespace-pre-line">
                 {message}
               </h4>
             </div>
