@@ -2,10 +2,11 @@
 pragma solidity ^0.8.13;
 
 library ShieldErrors {
+    error AlreadyInitialized();
+    error DuplicateSigner();
     error InvalidNonce();
     error InvalidSignature();
-    error DuplicateSigner();
     error RequiredSignersNotSatisfied();
-    error Unauthorized();
     error TransactionFailed();
+    error Unauthorized();
 }

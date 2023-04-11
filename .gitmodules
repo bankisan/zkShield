@@ -8,3 +8,8 @@
 	url = https://github.com/eth-infinitism/account-abstraction
 [submodule "lib/account-abstraction"]
 	branch = v0.5
+[submodule "contracts/lib/solady"]
+	path = contracts/lib/solady
+	url = https://github.com/Vectorized/solady
+[submodule "lib/solady"]
+	branch = v0.0.86

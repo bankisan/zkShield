@@ -3,20 +3,26 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import {EntryPoint, IEntryPoint} from "account-abstraction/core/EntryPoint.sol";
+import {ERC1967Factory} from "solady/utils/ERC1967Factory.sol";
+import {ERC1967FactoryConstants} from "solady/utils/ERC1967FactoryConstants.sol";
 
 import {ShieldAccount, UserOperation, SignatureProof, Transaction, ShieldErrors} from "../src/ShieldAccount.sol";
-
 import {Fixture, LoadFixture} from "./utils/Fixtures.sol";
 
 contract ShieldAccountTest is Test {
     using LoadFixture for Vm;
 
-    ShieldAccount shieldAccount;
+    ShieldAccount implementation;
+    ERC1967Factory factory = ERC1967Factory(address(1337));
     EntryPoint entryPoint;
+
+    ShieldAccount shieldAccount;
 
     function setUp() public {
         entryPoint = new EntryPoint();
-        vm.deal(address(entryPoint), 1 ether);
+        implementation = new ShieldAccount();
+
+        vm.etch(address(1337), ERC1967FactoryConstants.BYTECODE);
     }
 
     function deployDefaultShield() public {
@@ -24,11 +30,23 @@ contract ShieldAccountTest is Test {
     }
 
     function deployShieldWithFixture(Fixture memory fixture) public {
-        shieldAccount = new ShieldAccount(
-            IEntryPoint(address(entryPoint)),
-            bytes32(fixture.root),
-            3
+        bytes memory initializeCall = abi.encodeCall(
+            ShieldAccount.initialize,
+            (entryPoint, bytes32(fixture.root), 3)
         );
+        bytes32 salt = bytes32(uint256(1));
+
+        shieldAccount = ShieldAccount(
+            payable(factory.predictDeterministicAddress(salt))
+        );
+
+        factory.deployDeterministicAndCall(
+            address(implementation),
+            address(shieldAccount),
+            salt,
+            initializeCall
+        );
+
         vm.deal(address(shieldAccount), 1 ether);
     }
 
@@ -71,7 +89,7 @@ contract ShieldAccountTest is Test {
         });
 
         UserOperation memory userOp = UserOperation({
-            sender: address(shieldAccount),
+            sender: 0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63,
             nonce: 0,
             initCode: "",
             callData: "",
@@ -179,14 +197,14 @@ contract ShieldAccountTest is Test {
 
         assertEq(
             prevBalance - address(shieldAccount).balance,
-            1_000_000_000,
+            // Transfer amount and actual gas cost.
+            1_000_000_000 + 2121000,
             "transfer failed to send"
         );
     }
 
     function testRevertWhenCallingShieldMethods() public {
         deployDefaultShield();
-        // Fixture memory fixture = vm.loadFixture("transfer");
 
         vm.expectRevert(
             abi.encodeWithSelector(ShieldErrors.Unauthorized.selector)
@@ -208,6 +226,48 @@ contract ShieldAccountTest is Test {
             abi.encodeWithSelector(ShieldErrors.Unauthorized.selector)
         );
         shieldAccount.execute(tx_);
+    }
+
+    function testDeploysShieldAccount() public {
+        Fixture memory fixture = vm.loadFixture("default");
+
+        bytes memory initializeCall = abi.encodeCall(
+            ShieldAccount.initialize,
+            (entryPoint, bytes32(fixture.root), 3)
+        );
+
+        bytes32 salt = bytes32(uint256(0));
+        address sender = factory.predictDeterministicAddress(salt);
+        vm.deal(sender, 1 ether);
+
+        UserOperation[] memory ops = new UserOperation[](1);
+        ops[0].sender = sender;
+        ops[0].initCode = abi.encodePacked(
+            address(factory),
+            abi.encodeCall(
+                factory.deployDeterministicAndCall,
+                (
+                    address(implementation),
+                    address(shieldAccount),
+                    salt,
+                    initializeCall
+                )
+            )
+        );
+        ops[0].verificationGasLimit = 2_000_000;
+        entryPoint.handleOps(ops, payable(address(1)));
+
+        ShieldAccount deployed = ShieldAccount(payable(sender));
+        assertEq(
+            deployed.root(),
+            bytes32(fixture.root),
+            "Failed to deploy by checking root property"
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(ShieldErrors.AlreadyInitialized.selector)
+        );
+        deployed.initialize(IEntryPoint(address(1)), bytes32(uint256(1)), 1);
     }
 
     function testExtractProofs() public {

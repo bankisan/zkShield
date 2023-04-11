@@ -49,9 +49,10 @@ const toJson = <T extends Object>(data: T) => {
   ).replace(/"(-?\d+)#bigint"/g, (_, a) => a)
 }
 
-const defaultSender: `0x${string}` = `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`
-const defaultUserOp = {
+const defaultSender: `0x${string}` = `0x5D3465A42A569a3223eac7c2E20e4D8f9a6AC099`
+const defaultUserOp: UserOperation = {
   ...DefaultsForUserOp,
+  maxFeePerGas: 1n,
   sender: defaultSender,
   verificationGasLimit: 2_000_000n,
 }

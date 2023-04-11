@@ -7,6 +7,7 @@ import {IEntryPoint} from "account-abstraction/interfaces/IEntryPoint.sol";
 import {VerifySignatureVerifier} from "./verifiers/VerifySignatureVerifier.sol";
 
 import {ECUtils} from "./ECUtils.sol";
+import {MultiTokenReceiver} from "./MultiTokenReceiver.sol";
 import {ShieldErrors} from "./ShieldErrors.sol";
 
 struct SignatureProof {
@@ -32,7 +33,7 @@ struct Transaction {
     bool delegate;
 }
 
-contract ShieldAccount is BaseAccount {
+contract ShieldAccount is BaseAccount, MultiTokenReceiver {
     using UserOperationLib for UserOperation;
 
     // Membership set root.
@@ -44,14 +45,22 @@ contract ShieldAccount is BaseAccount {
 
     uint256 _nonce;
 
-    constructor(
+    bool hasInitialized;
+
+    function initialize(
         IEntryPoint __entryPoint,
         bytes32 _root,
-        uint16 _requiredSigners
-    ) {
+        uint96 _requiredSigners
+    ) external {
+        if (hasInitialized) {
+            revert ShieldErrors.AlreadyInitialized();
+        }
+
         _entrypoint = __entryPoint;
         root = _root;
         requiredSigners = _requiredSigners;
+
+        hasInitialized = true;
     }
 
     function entryPoint() public view override returns (IEntryPoint) {
@@ -140,6 +149,11 @@ contract ShieldAccount is BaseAccount {
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal view override returns (uint256 deadline) {
+        // Only occurs during the creation of the account.
+        if (userOp.initCode.length > 0) {
+            return 0;
+        }
+
         bytes calldata signature = userOp.signature;
         SignatureProof[] memory proofs = extractSignatureProofs(signature);
         uint256 proofsLength = proofs.length;
