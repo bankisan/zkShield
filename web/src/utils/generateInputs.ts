@@ -39,14 +39,6 @@ interface SignerWithTree extends Signer {
   pathIndices: any[]
 }
 
-const isDebugMode = false;
-
-function assert(condition: boolean, message?: string) {
-  if (isDebugMode && !condition) {
-    throw new Error(message || 'Assertion failed');
-  }
-}
-
 export const generateInputs = async (
   userOp?: UserOperation,
   nullifierSig?: `0x${string}`,
@@ -132,15 +124,7 @@ export const generateInputs = async (
   const sT = T?.multiply(s)
   const recoveredPublicKey = U.add(sT!).toAffine()
 
-  // Recovered public key is not equal to public key point: x
-  assert(recoveredPublicKey.x === publicKeyPoint.toAffine().x)
-  // Recovered public key is not equal to public key point: y
-  assert(recoveredPublicKey.y === publicKeyPoint.toAffine().y)
-
   const verified = secp256k1.verify(sig, msgHash, pub)
-
-  // Signature could not be verified
-  assert(verified)
 
   const sRegisters = splitToRegisters(s)
 
@@ -159,6 +143,5 @@ export const generateInputs = async (
     siblings,
   }
   
-  console.log(inputs)
   return inputs;
 }
