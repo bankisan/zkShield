@@ -5,6 +5,13 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@adraffy/ens-normalize@npm:1.9.0":
+  version: 1.9.0
+  resolution: "@adraffy/ens-normalize@npm:1.9.0"
+  checksum: a8d47f85db7a0bba01227fae8781a3245a4517875503d6848a47ca29e7f7da271742a2f93b55afc1b9201e74eda1fd1f1e6e79e70f967359fd7f6ec3d45bf243
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.18.6, @babel/code-frame@npm:^7.21.4":
   version: 7.21.4
   resolution: "@babel/code-frame@npm:7.21.4"
@@ -1768,15 +1775,27 @@ __metadata:
   linkType: hard
 
 "@stablelib/hmac@npm:^1.0.1":
-  version: 1.0.1
+  version: 0.0.0-use.local
   resolution: "@stablelib/hmac@npm:1.0.1"
   dependencies:
-    "@stablelib/constant-time": ^1.0.1
-    "@stablelib/hash": ^1.0.1
-    "@stablelib/wipe": ^1.0.1
+    "@noble/curves": ^0.8.0
+    "@types/chai": ^4.3.4
+    "@types/mocha": ^10.0.1
+    "@types/node": ^18.15.3
+    "@zk-kit/incremental-merkle-tree": ^1.0.0
+    chai: ^4.3.7
+    circom_tester: ^0.0.19
+    circomlibjs: ^0.1.7
+    common: "workspace:*"
+    mocha: ^10.2.0
+    snarkjs: ^0.6.9
+    ts-node: ^10.9.1
+    typescript: ^4.9.5
+    viem: ^0.3.0
+    yargs: ^17.7.1
   checksum: e3b93f7144a5846a6e30213278f7570de6d3f9d09131b95ce76d5c5c8bf37bf5d1830f2ee8d847555707271dbfd6e2461221719fd4d8b27ff06b9dd689c0ec21
-  languageName: node
-  linkType: hard
+  languageName: unknown
+  linkType: soft
 
 "@stablelib/int@npm:^1.0.1":
   version: 1.0.1
@@ -2177,7 +2196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/chains@npm:0.2.16, @wagmi/chains@npm:~0.2.11":
+"@wagmi/chains@npm:0.2.16":
   version: 0.2.16
   resolution: "@wagmi/chains@npm:0.2.16"
   peerDependencies:
@@ -2186,6 +2205,18 @@ __metadata:
     typescript:
       optional: true
   checksum: 3c106b98c54799022b83beb3fc62e09a87657c1e6fad47654025c8560fe46494aa2898ba28de98ba60bd1644cda35dcb02b15ccd698ff8791a4341ffc83f9cd8
+  languageName: node
+  linkType: hard
+
+"@wagmi/chains@npm:~0.2.11":
+  version: 0.2.13
+  resolution: "@wagmi/chains@npm:0.2.13"
+  peerDependencies:
+    typescript: ">=4.9.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 3ce67bdc20fd8c508b2f8f4887487ba9dd828e69cf03796b85afac803e339593930479f8811c1e6549b587fa7aa9c7fb2bf4d4a8737d42123ca9b7c088771803
   languageName: node
   linkType: hard
 
@@ -3716,7 +3747,7 @@ __metadata:
     snarkjs: ^0.6.9
     ts-node: ^10.9.1
     typescript: ^4.9.5
-    viem: ^0.2.6
+    viem: ^0.3.0
     yargs: ^17.7.1
   languageName: unknown
   linkType: soft
@@ -5975,7 +6006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"idna-uts46-hx@npm:4.1.2, idna-uts46-hx@npm:^4.1.2":
+"idna-uts46-hx@npm:^4.1.2":
   version: 4.1.2
   resolution: "idna-uts46-hx@npm:4.1.2"
   dependencies:
@@ -9544,20 +9575,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^0.2.6":
-  version: 0.2.6
-  resolution: "viem@npm:0.2.6"
+"viem@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "viem@npm:0.3.0"
   dependencies:
+    "@adraffy/ens-normalize": 1.9.0
     "@noble/curves": 0.9.0
     "@noble/hashes": 1.3.0
     "@scure/bip32": 1.2.0
     "@scure/bip39": 1.2.0
     "@wagmi/chains": 0.2.16
     abitype: 0.7.1
-    idna-uts46-hx: 4.1.2
     isomorphic-ws: 5.0.0
     ws: 8.12.0
-  checksum: bf85b79bed7cf0364d0be0596111288411a21ca456fa9bc98411ef36906af7c20f5cf91ecb38efc06360d5eab99a927744bbcc5d91b07959f51525d790b4f046
+  checksum: 14d6e69367ba072b9e2a55c7ed2da6533249af52935e7f10cf81160c595e4802934693aebf38b262737378400b58daeb27a9499b9ea3efc4b0ed512a65990cf5
   languageName: node
   linkType: hard
 

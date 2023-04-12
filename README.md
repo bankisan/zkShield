@@ -36,10 +36,10 @@ Here's a breakdown of the different techniques and technologies used to achieve 
 
 - [ ] Expanded documentation on setup and testing
 - [ ] Account abstraction improvements
-  - [ ] Factory contract that deploys the account
+  - [x] Factory contract that deploys the account
   - [ ] Improved gas estimations
   - [ ] ERC-1271 signature
-  - [ ] Account can receive ERC-721, ERC-1155, and ERC-777 tokens
+  - [x] Account can receive ERC-721, ERC-1155, and ERC-777 tokens
 - [ ] Frontend UI to create and manage a ShieldAccount
 - [ ] Deploy to testnets
 - [ ] Deploy to mainnets
