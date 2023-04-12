@@ -106,8 +106,6 @@ const createFixture = async (
     `0xFEfC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
     31337n,
   )
-  console.log(hashed)
-  console.log(hashed.length)
   const msgHash = utils.hexToBytes(hashed.slice(2))
 
   for (let i = 1; i <= numberOfSigners; i++) {

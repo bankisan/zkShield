@@ -9,8 +9,6 @@ import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 let tree: IncrementalMerkleTree
 createTree(4, 0n, 2).then((t) => {
   tree = t
-  console.log(tree)
-
   const priv = new Uint8Array(32).fill(1)
   const pub = secp256k1.getPublicKey(priv)
   const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(pub)
