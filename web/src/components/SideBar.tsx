@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { classNameMerge } from "@/utils/classNameMerge";
 
 type NavProps = {
   currentStepIndex: number;
@@ -22,7 +22,7 @@ const SideBar = ({ currentStepIndex, goTo }: NavProps) => {
               } md:text-base`}
             >
               <div
-                className={cn("text-[#ffe666]", currentStepIndex === 0 ? "underline" : "text-white")}
+                className={classNameMerge("text-[#ffe666]", currentStepIndex === 0 ? "underline" : "text-white")}
               >
                 Sign In
               </div>
@@ -40,7 +40,7 @@ const SideBar = ({ currentStepIndex, goTo }: NavProps) => {
               } md:text-base`}
             >
               <div
-                className={cn("text-[#E7B8FF]", currentStepIndex === 1 ? "underline" : "text-white")}
+                className={classNameMerge("text-[#E7B8FF]", currentStepIndex === 1 ? "underline" : "text-white")}
               >
                 Nullifier
               </div>
@@ -58,7 +58,7 @@ const SideBar = ({ currentStepIndex, goTo }: NavProps) => {
               } md:text-base`}
             >
               <div
-                className={cn("text-[#bd284d]", currentStepIndex === 2 ? "underline" : "text-white")}
+                className={classNameMerge("text-[#bd284d]", currentStepIndex === 2 ? "underline" : "text-white")}
               >
                 User Op
               </div>
@@ -76,7 +76,7 @@ const SideBar = ({ currentStepIndex, goTo }: NavProps) => {
               } md:text-base`}
             >
               <div
-                className={cn("text-[#6fe79f]", currentStepIndex === 3 ? "underline" : "text-white")}
+                className={classNameMerge("text-[#6fe79f]", currentStepIndex === 3 ? "underline" : "text-white")}
               >
                 Prover
               </div>

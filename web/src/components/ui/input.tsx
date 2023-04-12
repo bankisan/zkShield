@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@/utils/cn";
+import { classNameMerge } from "@/utils/classNameMerge";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -14,7 +14,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 after:pointer-events-none after:absolute after:inset-px after:rounded-[7px] after:shadow-highlight after:shadow-white/5 focus-within:after:shadow-[#77f6aa] after:transition"
         >
           <input
-            className={cn(
+            className={classNameMerge(
               "relative text-sm text-neutral-200 bg-neutral-750 placeholder:text-neutral-500 px-3.5 py-2 rounded-lg border border-black/5 shadow-input shadow-black/10 !outline-none",
               className
             )}

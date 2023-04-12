@@ -1,7 +1,7 @@
 import * as React from "react";
 import { VariantProps, cva } from "class-variance-authority";
 
-import { cn } from "@/utils/cn";
+import { classNameMerge } from "@/utils/classNameMerge";
 
 const buttonVariants = cva(
   "outline-none inline-flex items-center justify-center text-sm font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800",
@@ -40,7 +40,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => {
     return (
       <button
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={classNameMerge(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       />
