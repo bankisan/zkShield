@@ -105,44 +105,9 @@ export const executeTransactionData = (tx: Transaction) => {
   })
 }
 
-const powMod = (base: bigint, exponent: bigint, modulus: bigint): bigint => {
-  let result = 1n;
-  while (exponent > 0n) {
-    if (exponent % 2n === 1n) {
-      result = (result * base) % modulus;
-    }
-    base = (base * base) % modulus;
-    exponent /= 2n;
-  }
-  return result;
-}
-
 export const publicKeyToAddress = (publicKey: Uint8Array): string => { 
   const pub = secp256k1.ProjectivePoint.fromHex(publicKey).toRawBytes(false)
   console.log(pub)
   const addr = "0x" + bytesToHex(keccak_256(pub.subarray(1, 65))).slice(24);
   return addr;
-}
-
-export const addressToProjectivePoint = (address: string): ProjPointType<bigint> => {
-  const addressBytes = utils.hexToBytes(address.slice(2))
-  const prefixBytes = Uint8Array.from([0x04])
-  const publicKeyBytes = Uint8Array.from([...prefixBytes, ...addressBytes])
-
-  const hashedBytes = keccak256(publicKeyBytes)
-  const x = BigInt(hashedBytes)
-
-  // Calculate y-coordinate using secp256k1 curve equation
-  const ySquared = (x ** 3n + 7n) % secp256k1.CURVE.Fp.ORDER
-  const y = powMod(ySquared, (secp256k1.CURVE.Fp.ORDER + 1n) / 4n, secp256k1.CURVE.Fp.ORDER);
-
-  // Determine whether to use positive or negative y-coordinate based on first byte of hashBytes
-  let yCoord: bigint;
-  if (BigInt(hashedBytes) % 2n === 0n) {
-    yCoord = y;
-  } else {
-    yCoord = secp256k1.CURVE.Fp.ORDER - y;
-  }
-
-  return new secp256k1.ProjectivePoint(x, yCoord, BigInt(hashedBytes) % 2n === 0n ? 0n : 1n)
 }

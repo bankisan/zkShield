@@ -70,17 +70,6 @@ export default function Home() {
   } = useMultiStepForm(4);
   const { signMessageAsync } = useSignMessage({ message: messageHash });
 
-  // Initial run to test proof generation and warm up the prover wasm.
-  useEffect(() => {
-    const testProof = async () => {
-      const inputs = await generateInputs();
-      const commitProof = await generateCommitProof(inputs)
-      const { proof, publicSignals } = commitProof
-      console.log({ proof, publicSignals })
-    }
-    testProof()
-  }, [])
-
   const handleHash = async () => {
     const { callData, proof: _, publicSignals: __, ...userOp } = formData;
     const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };

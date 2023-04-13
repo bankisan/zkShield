@@ -42,10 +42,6 @@ export interface SnarkJS {
 
 /// Fetches the wasm and zkey files + imports snarkjs
 const { groth16 }: SnarkJS = require('snarkjs')
-Promise.all([
-  fetch(VERIFY_SIGNATURE_WASM_PATH),
-  fetch(VERIFY_SIGNATURE_ZKEY_PATH)
-])
 
 /// Converts bigint to string for snarkjs
 type ConvertedInput = Record<string, string | string[] | string[][] | string[][][][]>;
@@ -64,6 +60,10 @@ const convertInput = (input: Input): ConvertedInput => {
 export const generateCommitProof = async (
   input: Input
 ) => {
+  await Promise.all([
+    fetch(VERIFY_SIGNATURE_WASM_PATH),
+    fetch(VERIFY_SIGNATURE_ZKEY_PATH)
+  ])
   const { s, TPreComputes, U, secret, pathIndices, siblings } = convertInput(input);
 
   return groth16.fullProve(

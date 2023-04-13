@@ -3,7 +3,7 @@ import * as mod from '@noble/curves/abstract/modular'
 import * as utils from '@noble/curves/abstract/utils'
 import { hexToNumber, hexToBigInt } from 'viem'
 import { ProjPointType, SignatureType } from '@noble/curves/abstract/weierstrass'
-import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, addressToProjectivePoint, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
+import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 
 let tree: IncrementalMerkleTree
