@@ -1,7 +1,7 @@
 /// Code from: https://github.com/Marcosfitzsimons/multi-step-form/blob/15eb077bebb80ce60827ffcd7b29065c95010aa2/app/page.tsx#
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { AnimatePresence } from "framer-motion";
@@ -16,7 +16,8 @@ import * as utils from "@noble/curves/abstract/utils"
 import { generateInputs } from '@/utils/generateInputs';
 import { Proof, generateCommitProof } from '@/services/snark';
 import { useAccount, useSignMessage } from 'wagmi';
-import { UserOperation, executeTransactionData, personalUserOpHash } from 'common';
+import { UserOperation, personalUserOpHash } from 'common';
+import { Hex } from 'viem';
 
 export type CallData = {
   target: `0x${string}`;
@@ -26,7 +27,7 @@ export type CallData = {
 };
 
 export type FormItems = Omit<UserOperation, "callData"> & {
-  callData: CallData;
+  callData: Hex;
   nullifier?: string;
   proof?: Proof;
   publicSignals?: string[];
@@ -35,12 +36,7 @@ export type FormItems = Omit<UserOperation, "callData"> & {
 export const initialValues: FormItems = {
   sender: `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`,
   nonce: 0n,
-  callData: {
-    target: `0x1111111111111111111111111111111111111111`,
-    value: 1_000_000_000n,
-    payload: `0x`,
-    delegate: false
-  },
+  callData: `0x`,
   initCode: `0x`,
   callGasLimit: 100_000n,
   verificationGasLimit: 2_000_000n,
@@ -72,7 +68,9 @@ export default function Home() {
 
   const handleHash = async () => {
     const { callData, proof: _, publicSignals: __, ...userOp } = formData;
-    const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
+    // TODO: calculate callData from params
+    // const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
+    const refinedUserOp = { callData: callData, ...userOp };
 
     const hashed = personalUserOpHash(
       refinedUserOp,
@@ -85,7 +83,11 @@ export default function Home() {
 
   const handleProve = async () => { 
     const { callData, proof: _, publicSignals: __, ...userOp } = formData;
-    const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
+
+    // TODO: calculate callData from params
+    // const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
+    const refinedUserOp = { callData: callData, ...userOp };
+
     // const signature = await signMessageAsync()
     /// first byte is v - 27 or 28, which is not part of the signature, hence slice(4)
     const signatureBytes = utils.hexToBytes(formData.signature.slice(4))
@@ -101,12 +103,24 @@ export default function Home() {
   }
 
   async function updateForm(fieldToUpdate: Partial<FormItems>) {
-    const { callGasLimit, signature, maxPriorityFeePerGas } = fieldToUpdate;
+    const { callData, callGasLimit, maxFeePerGas, maxPriorityFeePerGas } = fieldToUpdate;
 
-    if (callGasLimit && callGasLimit > 50_000n) {
+    if (!/^0x[0-9a-fA-F]+$/.test(callData ?? formData.callData)) {
       setErrors((prevState) => ({
         ...prevState,
-        callGasLimit: "CallGasLimit should be at least 50,000 gwei.",
+        callData: "Please enter a valid hex",
+      }));
+    } else {
+      setErrors((prevState) => ({
+        ...prevState,
+        callData: "",
+      }));
+    }
+
+    if ((callGasLimit ?? formData.callGasLimit) < 50_000n) {
+      setErrors((prevState) => ({
+        ...prevState,
+        callGasLimit: "callGasLimit should be at least 50,000 gwei.",
       }));
     } else {
       setErrors((prevState) => ({
@@ -115,22 +129,22 @@ export default function Home() {
       }));
     }
 
-    if (signature && !/^0x[0-9a-fA-F]/.test(signature)) {
+    if ((maxFeePerGas ?? formData.maxFeePerGas) > 10_000n) {
       setErrors((prevState) => ({
         ...prevState,
-        signature: "Please enter a valid signature",
+        maxFeePerGas: "maxFeePerGas should be less than 10,000 gwei.",
       }));
     } else {
       setErrors((prevState) => ({
         ...prevState,
-        signature: "",
+        maxFeePerGas: "",
       }));
     }
 
-    if (maxPriorityFeePerGas && maxPriorityFeePerGas < 10_000n) {
+    if ((maxPriorityFeePerGas ?? formData.maxPriorityFeePerGas) > 10_000n) {
       setErrors((prevState) => ({
         ...prevState,
-        maxPriorityFeePerGas: "MaxPriorityFeePerGas should be less than 10,000 gwei.",
+        maxPriorityFeePerGas: "maxPriorityFeePerGas should be less than 10,000 gwei.",
       }));
     } else {
       setErrors((prevState) => ({
