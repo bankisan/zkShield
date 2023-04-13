@@ -110,7 +110,7 @@ export default function Home() {
   async function updateForm(fieldToUpdate: Partial<FormItems>) {
     const { callData, callGasLimit, maxFeePerGas, maxPriorityFeePerGas } = fieldToUpdate;
 
-    if (callData && !/^0x[0-9a-fA-F]+$/.test(callData)) {
+    if (!/^0x[0-9a-fA-F]+$/.test(callData ?? formData.callData)) {
       setErrors((prevState) => ({
         ...prevState,
         callData: "Please enter a valid hex",
@@ -122,7 +122,7 @@ export default function Home() {
       }));
     }
 
-    if (callGasLimit && callGasLimit > 50_000) {
+    if ((callGasLimit ?? formData.callGasLimit) < 50_000n) {
       setErrors((prevState) => ({
         ...prevState,
         callGasLimit: "callGasLimit should be at least 50,000 gwei.",
@@ -134,7 +134,7 @@ export default function Home() {
       }));
     }
 
-    if (maxFeePerGas && maxFeePerGas > 10_000) {
+    if ((maxFeePerGas ?? formData.maxFeePerGas) > 10_000n) {
       setErrors((prevState) => ({
         ...prevState,
         maxFeePerGas: "maxFeePerGas should be less than 10,000 gwei.",
@@ -146,10 +146,10 @@ export default function Home() {
       }));
     }
 
-    if (maxPriorityFeePerGas && maxPriorityFeePerGas > 10_000) {
+    if ((maxPriorityFeePerGas ?? formData.maxPriorityFeePerGas) > 10_000n) {
       setErrors((prevState) => ({
         ...prevState,
-        maxPriorityFeePerGas: "MaxPriorityFeePerGas should be less than 10,000 gwei.",
+        maxPriorityFeePerGas: "maxPriorityFeePerGas should be less than 10,000 gwei.",
       }));
     } else {
       setErrors((prevState) => ({
