@@ -16,6 +16,9 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["index.ts", "types/**.d.ts", "lib"],
-  "exclude": ["dist"]
+  "include": ["index.ts", "types/**.d.ts", "lib", "test"],
+  "exclude": ["dist"],
+  "ts-node": {
+      "files": true
+  },
 }

@@ -1053,33 +1053,6 @@ export declare const entryPointABI: readonly [{
     readonly stateMutability: "payable";
     readonly type: "receive";
 }];
-export declare const counterABI: readonly [{
-    readonly stateMutability: "nonpayable";
-    readonly type: "function";
-    readonly inputs: readonly [];
-    readonly name: "increment";
-    readonly outputs: readonly [];
-}, {
-    readonly stateMutability: "view";
-    readonly type: "function";
-    readonly inputs: readonly [];
-    readonly name: "number";
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly internalType: "uint256";
-        readonly type: "uint256";
-    }];
-}, {
-    readonly stateMutability: "nonpayable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "newNumber";
-        readonly internalType: "uint256";
-        readonly type: "uint256";
-    }];
-    readonly name: "setNumber";
-    readonly outputs: readonly [];
-}];
 export declare const iAccountABI: readonly [{
     readonly stateMutability: "nonpayable";
     readonly type: "function";
@@ -1144,88 +1117,6 @@ export declare const iAccountABI: readonly [{
     readonly name: "validateUserOp";
     readonly outputs: readonly [{
         readonly name: "validationData";
-        readonly internalType: "uint256";
-        readonly type: "uint256";
-    }];
-}];
-export declare const iAggregatedAccountABI: readonly [{
-    readonly stateMutability: "view";
-    readonly type: "function";
-    readonly inputs: readonly [];
-    readonly name: "getAggregator";
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "nonpayable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "userOp";
-        readonly internalType: "struct UserOperation";
-        readonly type: "tuple";
-        readonly components: readonly [{
-            readonly name: "sender";
-            readonly internalType: "address";
-            readonly type: "address";
-        }, {
-            readonly name: "nonce";
-            readonly internalType: "uint256";
-            readonly type: "uint256";
-        }, {
-            readonly name: "initCode";
-            readonly internalType: "bytes";
-            readonly type: "bytes";
-        }, {
-            readonly name: "callData";
-            readonly internalType: "bytes";
-            readonly type: "bytes";
-        }, {
-            readonly name: "callGasLimit";
-            readonly internalType: "uint256";
-            readonly type: "uint256";
-        }, {
-            readonly name: "verificationGasLimit";
-            readonly internalType: "uint256";
-            readonly type: "uint256";
-        }, {
-            readonly name: "preVerificationGas";
-            readonly internalType: "uint256";
-            readonly type: "uint256";
-        }, {
-            readonly name: "maxFeePerGas";
-            readonly internalType: "uint256";
-            readonly type: "uint256";
-        }, {
-            readonly name: "maxPriorityFeePerGas";
-            readonly internalType: "uint256";
-            readonly type: "uint256";
-        }, {
-            readonly name: "paymasterAndData";
-            readonly internalType: "bytes";
-            readonly type: "bytes";
-        }, {
-            readonly name: "signature";
-            readonly internalType: "bytes";
-            readonly type: "bytes";
-        }];
-    }, {
-        readonly name: "userOpHash";
-        readonly internalType: "bytes32";
-        readonly type: "bytes32";
-    }, {
-        readonly name: "aggregator";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "missingAccountFunds";
-        readonly internalType: "uint256";
-        readonly type: "uint256";
-    }];
-    readonly name: "validateUserOp";
-    readonly outputs: readonly [{
-        readonly name: "deadline";
         readonly internalType: "uint256";
         readonly type: "uint256";
     }];
@@ -2865,31 +2756,6 @@ export declare const senderCreatorABI: readonly [{
         readonly type: "address";
     }];
 }];
-export declare const errorsABI: readonly [{
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "DuplicateSigner";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "InvalidNonce";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "InvalidSignature";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "RequiredSignersNotSatisfied";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "TransactionFailed";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "Unauthorized";
-}];
 export declare const shieldAccountABI: readonly [{
     readonly stateMutability: "nonpayable";
     readonly type: "constructor";
@@ -3017,6 +2883,20 @@ export declare const shieldAccountABI: readonly [{
             readonly internalType: "uint256";
             readonly type: "uint256";
         }];
+    }];
+}, {
+    readonly stateMutability: "pure";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "hash";
+        readonly internalType: "bytes32";
+        readonly type: "bytes32";
+    }];
+    readonly name: "getEthSignedMessageHash";
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly internalType: "bytes32";
+        readonly type: "bytes32";
     }];
 }, {
     readonly stateMutability: "view";
