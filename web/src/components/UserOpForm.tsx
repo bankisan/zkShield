@@ -47,11 +47,7 @@ const UserOpForm = ({
             id="callGasLimit"
             placeholder="100_000"
             value={callGasLimit.toString()}
-            onChange={(e) => {
-              if (BigInt(e.target.value)) {
-                updateForm({ callGasLimit: BigInt(e.target.value) })
-              }
-            }}
+            onChange={(e) => updateForm({ callGasLimit: BigInt(e.target.value) })}
             className="w-full"
             required
           />
@@ -66,11 +62,7 @@ const UserOpForm = ({
             id="maxFeePerGas"
             placeholder="21_000"
             value={maxFeePerGas.toString()}
-            onChange={(e) => {
-              if (BigInt(e.target.value)) {
-                updateForm({ maxFeePerGas: BigInt(e.target.value) })
-              }
-            }}
+            onChange={(e) => updateForm({ maxFeePerGas: BigInt(e.target.value) })}
             className="w-full"
             required
           />
@@ -84,11 +76,7 @@ const UserOpForm = ({
             id="maxPriorityFeePerGas"
             placeholder="0"
             value={maxPriorityFeePerGas.toString()}
-            onChange={(e) => {
-              if (BigInt(e.target.value)) {
-                updateForm({ maxPriorityFeePerGas: BigInt(e.target.value) })
-              }
-            }}
+            onChange={(e) => updateForm({ maxPriorityFeePerGas: BigInt(e.target.value) })}
             className="w-full"
             required
           />

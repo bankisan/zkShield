@@ -1,7 +1,7 @@
 /// Code from: https://github.com/Marcosfitzsimons/multi-step-form/blob/15eb077bebb80ce60827ffcd7b29065c95010aa2/app/page.tsx#
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { AnimatePresence } from "framer-motion";
@@ -16,7 +16,8 @@ import * as utils from "@noble/curves/abstract/utils"
 import { generateInputs } from '@/utils/generateInputs';
 import { Proof, generateCommitProof } from '@/services/snark';
 import { useAccount, useSignMessage } from 'wagmi';
-import { UserOperation, executeTransactionData, personalUserOpHash } from 'common';
+import { UserOperation, personalUserOpHash } from 'common';
+import { Hex } from 'viem';
 
 export type CallData = {
   target: `0x${string}`;
@@ -26,7 +27,7 @@ export type CallData = {
 };
 
 export type FormItems = Omit<UserOperation, "callData"> & {
-  callData: `0x${string}`;
+  callData: Hex;
   nullifier?: string;
   proof?: Proof;
   publicSignals?: string[];
@@ -35,12 +36,6 @@ export type FormItems = Omit<UserOperation, "callData"> & {
 export const initialValues: FormItems = {
   sender: `0x2a9e8fa175F45b235efDdD97d2727741EF4Eee63`,
   nonce: 0n,
-  // callData: {
-  //   target: `0x1111111111111111111111111111111111111111`,
-  //   value: 1_000_000_000n,
-  //   payload: `0x`,
-  //   delegate: false
-  // },
   callData: `0x`,
   initCode: `0x`,
   callGasLimit: 100_000n,
