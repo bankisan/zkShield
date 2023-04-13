@@ -9,8 +9,9 @@ type StepProps = FormItems & {
 };
 
 const UserOpForm = ({
+  callData,
   callGasLimit,
-  signature,
+  maxFeePerGas,
   maxPriorityFeePerGas,
   errors,
   updateForm,
@@ -20,48 +21,75 @@ const UserOpForm = ({
       title="User Op"
       description="Please provide your specified user operation."
     >
-      <div className="w-full flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="name">callGasLimit</Label>
+      <div className="bg-neutral-900 w-full flex flex-col gap-4 overflow-y-scroll h-[20rem] p-4 rounded-md border border-neutral-700">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="callData">callData</Label>
+          <Input
+            type="text"
+            name="callData"
+            id="callData"
+            placeholder="0x"
+            value={callData}
+            className="w-full"
+            onChange={(e) => updateForm({ callData: e.target.value as `0x${string}` })}
+            required
+          />
+          {errors.callData && (
+            <p className="text-red-500 text-sm">{errors.callData}</p>
+          )}
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="callGasLimit">callGasLimit</Label>
           <Input
             autoFocus
-            type="text"
-            name="name"
-            id="name"
-            placeholder="e.g. Stephen King"
+            type="number"
+            name="callGasLimit"
+            id="callGasLimit"
+            placeholder="100_000"
             value={callGasLimit.toString()}
-            onChange={(e) => updateForm({ callGasLimit: BigInt(e.target.value) })}
+            onChange={(e) => {
+              if (BigInt(e.target.value)) {
+                updateForm({ callGasLimit: BigInt(e.target.value) })
+              }
+            }}
             className="w-full"
             required
           />
           {typeof errors.callGasLimit !== "undefined" && <p className="text-red-500 text-sm">{errors.callGasLimit.toString()}</p>}
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">signature</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="maxFeePerGas">maxFeePerGas</Label>
           <Input
-            type="text"
-            name="signature"
-            id="signature"
-            placeholder="e.g. stephenking@lorem.com"
-            value={signature}
+            autoFocus
+            type="number"
+            name="maxFeePerGas"
+            id="maxFeePerGas"
+            placeholder="21_000"
+            value={maxFeePerGas.toString()}
+            onChange={(e) => {
+              if (BigInt(e.target.value)) {
+                updateForm({ maxFeePerGas: BigInt(e.target.value) })
+              }
+            }}
             className="w-full"
-            onChange={(e) => updateForm({ signature: e.target.value as `0x${string}` })}
             required
           />
-          {errors.signature && (
-            <p className="text-red-500 text-sm">{errors.signature}</p>
-          )}
+          {typeof errors.maxFeePerGas !== "undefined" && <p className="text-red-500 text-sm">{errors.maxFeePerGas.toString()}</p>}
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="phone">maxPriorityFeePerGas</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="maxPriorityFeePerGas">maxPriorityFeePerGas</Label>
           <Input
-            type="text"
+            type="number"
             name="maxPriorityFeePerGas"
             id="maxPriorityFeePerGas"
             placeholder="0"
             value={maxPriorityFeePerGas.toString()}
+            onChange={(e) => {
+              if (BigInt(e.target.value)) {
+                updateForm({ maxPriorityFeePerGas: BigInt(e.target.value) })
+              }
+            }}
             className="w-full"
-            onChange={(e) => updateForm({ maxPriorityFeePerGas: BigInt(e.target.value) })}
             required
           />
           {typeof errors.maxPriorityFeePerGas !== "undefined" && (
