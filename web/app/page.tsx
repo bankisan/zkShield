@@ -125,7 +125,7 @@ export default function Home() {
     if (callGasLimit && callGasLimit > 50_000) {
       setErrors((prevState) => ({
         ...prevState,
-        callGasLimit: "CallGasLimit should be at least 50,000 gwei.",
+        callGasLimit: "callGasLimit should be at least 50,000 gwei.",
       }));
     } else {
       setErrors((prevState) => ({
@@ -134,7 +134,7 @@ export default function Home() {
       }));
     }
 
-    if (maxFeePerGas && maxFeePerGas < 10_000) {
+    if (maxFeePerGas && maxFeePerGas > 10_000) {
       setErrors((prevState) => ({
         ...prevState,
         maxFeePerGas: "maxFeePerGas should be less than 10,000 gwei.",
@@ -146,7 +146,7 @@ export default function Home() {
       }));
     }
 
-    if (maxPriorityFeePerGas && maxPriorityFeePerGas < 10_000) {
+    if (maxPriorityFeePerGas && maxPriorityFeePerGas > 10_000) {
       setErrors((prevState) => ({
         ...prevState,
         maxPriorityFeePerGas: "MaxPriorityFeePerGas should be less than 10,000 gwei.",
