@@ -1,6 +1,6 @@
 import FormWrapper from "./FormWrapper";
 import { FormItems } from "@/app/page";
-import { message } from "@/app/page";
+import { nullifierMessage } from "common";
 
 type StepProps = FormItems;
 
@@ -15,7 +15,7 @@ const NullifierForm = ({ nullifier }: StepProps) => {
           <div className="flex justify-between items-center">
             <div className="">
               <h4 className="font-semibold text-white md:text-lg whitespace-pre-line">
-                {message}
+                {nullifierMessage}
               </h4>
             </div>
           </div>

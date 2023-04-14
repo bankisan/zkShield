@@ -16,8 +16,8 @@ import * as utils from "@noble/curves/abstract/utils"
 import { generateInputs } from '@/utils/generateInputs';
 import { Proof, generateCommitProof } from '@/services/snark';
 import { useAccount, useSignMessage } from 'wagmi';
-import { UserOperation, personalUserOpHash } from 'common';
 import { Hex } from 'viem';
+import { UserOperation, nullifierMessage, personalUserOpHash } from 'common';
 
 export type CallData = {
   target: `0x${string}`;
@@ -47,11 +47,9 @@ export const initialValues: FormItems = {
   signature: `0x`
 };
 
-export const message = "Hello, this is your super secure password signature.\n\nDo not sign this message anywhere else outside of zkshield.io!!!";
-
 export default function Home() {
   const { address } = useAccount();
-  const [messageHash, setMessageHash] = useState<Uint8Array>(new TextEncoder().encode(message));
+  const [messageHash, setMessageHash] = useState<Uint8Array>(new TextEncoder().encode(nullifierMessage));
   const [formData, setFormData] = useState(initialValues);
   const [isProving, setIsProving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -92,7 +90,7 @@ export default function Home() {
     /// first byte is v - 27 or 28, which is not part of the signature, hence slice(4)
     const signatureBytes = utils.hexToBytes(formData.signature.slice(4))
     const sig = secp256k1.Signature.fromCompact(signatureBytes)
-    const input = await generateInputs(refinedUserOp, formData.nullifier as `0x${string}`, messageHash, sig);
+    const input = await generateInputs(refinedUserOp, formData.nullifier as `0x${string}`, nullifierMessage, messageHash, sig);
     const commitProof = await generateCommitProof(input)
     console.log('proving...')
     const { proof, publicSignals } = commitProof;

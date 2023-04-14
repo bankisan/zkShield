@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate:signers": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateSignerAndTree.mts"
   },
   "dependencies": {
     "@noble/curves": "^0.8.0",
@@ -42,6 +43,7 @@
     "tailwindcss": "3.3.1",
     "tailwindcss-animate": "^1.0.5",
     "typescript": "5.0.3",
+    "viem": "0.3.0",
     "wagmi": "^0.12.9"
   }
 }

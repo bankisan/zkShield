@@ -86,245 +86,6 @@ export declare const baseAccountABI: readonly [{
         readonly type: "uint256";
     }];
 }];
-export declare const erc1967FactoryABI: readonly [{
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "DeploymentFailed";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "SaltDoesNotStartWithCaller";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "Unauthorized";
-}, {
-    readonly type: "error";
-    readonly inputs: readonly [];
-    readonly name: "UpgradeFailed";
-}, {
-    readonly type: "event";
-    readonly anonymous: false;
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }];
-    readonly name: "AdminChanged";
-}, {
-    readonly type: "event";
-    readonly anonymous: false;
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }, {
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }];
-    readonly name: "Deployed";
-}, {
-    readonly type: "event";
-    readonly anonymous: false;
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }, {
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-        readonly indexed: true;
-    }];
-    readonly name: "Upgraded";
-}, {
-    readonly stateMutability: "view";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-    readonly name: "adminOf";
-    readonly outputs: readonly [{
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "nonpayable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-    readonly name: "changeAdmin";
-    readonly outputs: readonly [];
-}, {
-    readonly stateMutability: "payable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-    readonly name: "deploy";
-    readonly outputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "payable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "data";
-        readonly internalType: "bytes";
-        readonly type: "bytes";
-    }];
-    readonly name: "deployAndCall";
-    readonly outputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "payable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "salt";
-        readonly internalType: "bytes32";
-        readonly type: "bytes32";
-    }];
-    readonly name: "deployDeterministic";
-    readonly outputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "payable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "admin";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "salt";
-        readonly internalType: "bytes32";
-        readonly type: "bytes32";
-    }, {
-        readonly name: "data";
-        readonly internalType: "bytes";
-        readonly type: "bytes";
-    }];
-    readonly name: "deployDeterministicAndCall";
-    readonly outputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "view";
-    readonly type: "function";
-    readonly inputs: readonly [];
-    readonly name: "initCodeHash";
-    readonly outputs: readonly [{
-        readonly name: "result";
-        readonly internalType: "bytes32";
-        readonly type: "bytes32";
-    }];
-}, {
-    readonly stateMutability: "view";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "salt";
-        readonly internalType: "bytes32";
-        readonly type: "bytes32";
-    }];
-    readonly name: "predictDeterministicAddress";
-    readonly outputs: readonly [{
-        readonly name: "predicted";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-}, {
-    readonly stateMutability: "payable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-    }];
-    readonly name: "upgrade";
-    readonly outputs: readonly [];
-}, {
-    readonly stateMutability: "payable";
-    readonly type: "function";
-    readonly inputs: readonly [{
-        readonly name: "proxy";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "implementation";
-        readonly internalType: "address";
-        readonly type: "address";
-    }, {
-        readonly name: "data";
-        readonly internalType: "bytes";
-        readonly type: "bytes";
-    }];
-    readonly name: "upgradeAndCall";
-    readonly outputs: readonly [];
-}];
 export declare const entryPointABI: readonly [{
     readonly type: "error";
     readonly inputs: readonly [{
@@ -1291,6 +1052,262 @@ export declare const entryPointABI: readonly [{
 }, {
     readonly stateMutability: "payable";
     readonly type: "receive";
+}];
+export declare const devDeployABI: readonly [{
+    readonly stateMutability: "view";
+    readonly type: "function";
+    readonly inputs: readonly [];
+    readonly name: "IS_SCRIPT";
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly internalType: "bool";
+        readonly type: "bool";
+    }];
+}, {
+    readonly stateMutability: "nonpayable";
+    readonly type: "function";
+    readonly inputs: readonly [];
+    readonly name: "run";
+    readonly outputs: readonly [];
+}];
+export declare const erc1967FactoryABI: readonly [{
+    readonly type: "error";
+    readonly inputs: readonly [];
+    readonly name: "DeploymentFailed";
+}, {
+    readonly type: "error";
+    readonly inputs: readonly [];
+    readonly name: "SaltDoesNotStartWithCaller";
+}, {
+    readonly type: "error";
+    readonly inputs: readonly [];
+    readonly name: "Unauthorized";
+}, {
+    readonly type: "error";
+    readonly inputs: readonly [];
+    readonly name: "UpgradeFailed";
+}, {
+    readonly type: "event";
+    readonly anonymous: false;
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }];
+    readonly name: "AdminChanged";
+}, {
+    readonly type: "event";
+    readonly anonymous: false;
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }];
+    readonly name: "Deployed";
+}, {
+    readonly type: "event";
+    readonly anonymous: false;
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+        readonly indexed: true;
+    }];
+    readonly name: "Upgraded";
+}, {
+    readonly stateMutability: "view";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+    readonly name: "adminOf";
+    readonly outputs: readonly [{
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+}, {
+    readonly stateMutability: "nonpayable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+    readonly name: "changeAdmin";
+    readonly outputs: readonly [];
+}, {
+    readonly stateMutability: "payable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+    readonly name: "deploy";
+    readonly outputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+}, {
+    readonly stateMutability: "payable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "data";
+        readonly internalType: "bytes";
+        readonly type: "bytes";
+    }];
+    readonly name: "deployAndCall";
+    readonly outputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+}, {
+    readonly stateMutability: "payable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "salt";
+        readonly internalType: "bytes32";
+        readonly type: "bytes32";
+    }];
+    readonly name: "deployDeterministic";
+    readonly outputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+}, {
+    readonly stateMutability: "payable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "admin";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "salt";
+        readonly internalType: "bytes32";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "data";
+        readonly internalType: "bytes";
+        readonly type: "bytes";
+    }];
+    readonly name: "deployDeterministicAndCall";
+    readonly outputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+}, {
+    readonly stateMutability: "view";
+    readonly type: "function";
+    readonly inputs: readonly [];
+    readonly name: "initCodeHash";
+    readonly outputs: readonly [{
+        readonly name: "result";
+        readonly internalType: "bytes32";
+        readonly type: "bytes32";
+    }];
+}, {
+    readonly stateMutability: "view";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "salt";
+        readonly internalType: "bytes32";
+        readonly type: "bytes32";
+    }];
+    readonly name: "predictDeterministicAddress";
+    readonly outputs: readonly [{
+        readonly name: "predicted";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+}, {
+    readonly stateMutability: "payable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+    }];
+    readonly name: "upgrade";
+    readonly outputs: readonly [];
+}, {
+    readonly stateMutability: "payable";
+    readonly type: "function";
+    readonly inputs: readonly [{
+        readonly name: "proxy";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "implementation";
+        readonly internalType: "address";
+        readonly type: "address";
+    }, {
+        readonly name: "data";
+        readonly internalType: "bytes";
+        readonly type: "bytes";
+    }];
+    readonly name: "upgradeAndCall";
+    readonly outputs: readonly [];
 }];
 export declare const iAccountABI: readonly [{
     readonly stateMutability: "nonpayable";

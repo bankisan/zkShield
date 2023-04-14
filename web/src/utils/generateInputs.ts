@@ -1,8 +1,8 @@
 import { secp256k1 } from '@noble/curves/secp256k1'
 import * as mod from '@noble/curves/abstract/modular'
 import * as utils from '@noble/curves/abstract/utils'
-import { hexToNumber, hexToBigInt } from 'viem'
-import { ProjPointType, SignatureType } from '@noble/curves/abstract/weierstrass'
+import { hexToNumber, keccak256, hashMessage } from 'viem'
+import { SignatureType } from '@noble/curves/abstract/weierstrass'
 import { createTree, DefaultsForUserOp, executeTransactionData, calculatePrecomputes, splitToRegisters, hasher, getUserOpHash, UserOperation } from 'common';
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree'
 
@@ -24,22 +24,10 @@ createTree(4, 0n, 2).then((t) => {
   })
 })
 
-type Signer = {
-  priv: Uint8Array
-  pub: Uint8Array
-  publicKeyPoint: ProjPointType<bigint>
-  secret: bigint
-  nullifier: bigint
-}
-
-interface SignerWithTree extends Signer {
-  siblings: number[]
-  pathIndices: any[]
-}
-
 export const generateInputs = async (
   userOp?: UserOperation,
   nullifierSig?: `0x${string}`,
+  nullifierMessage?: string,
   msgHash?: Uint8Array,
   sig?: SignatureType
 ) => { 
@@ -58,20 +46,21 @@ export const generateInputs = async (
 
   const priv = new Uint8Array(32).fill(1)
   let pub;
+  const nullifierMessageHashed = hashMessage(nullifierMessage!)
   if (nullifierSig) {
     const v = hexToNumber(`0x${nullifierSig.slice(130)}`)
     pub = secp256k1.Signature.fromCompact(
         nullifierSig.substring(2, 130),
       )
         .addRecoveryBit(v - 27)
-        .recoverPublicKey(nullifierSig.substring(2))
-        .toHex(true)
+        .recoverPublicKey(nullifierMessageHashed.substring(2))
+        .toHex(false)
   } else {
     pub = secp256k1.getPublicKey(priv)
   }
 
   const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(pub);
-  const secret = nullifierSig ? hexToBigInt(nullifierSig) : 1n;
+  const secret = BigInt(keccak256(nullifierSig!))
   
   const Qa = [
     ...splitToRegisters(publicKeyPoint.toAffine().x),
@@ -82,7 +71,7 @@ export const generateInputs = async (
   tree.insert(nullifier)
   
   const { pathIndices, siblings } = tree.createProof(1)
-  const root = tree.root
+
   if (!msgHash) {
     const hashed = getUserOpHash(
       userOp,
@@ -118,11 +107,6 @@ export const generateInputs = async (
     secp256k1.CURVE.n,
   )
   const U = secp256k1.ProjectivePoint.BASE.multiply(u)
-
-  const sT = T?.multiply(s)
-  const recoveredPublicKey = U.add(sT!).toAffine()
-
-  const verified = secp256k1.verify(sig, msgHash, pub)
 
   const sRegisters = splitToRegisters(s)
 

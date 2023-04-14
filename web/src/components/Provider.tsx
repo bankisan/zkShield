@@ -2,11 +2,12 @@
 
 import { ReactNode } from 'react'
 import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi'
+import { foundry } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { ConnectKitProvider, getDefaultClient } from "connectkit";
 
 const { chains, provider } = configureChains(
-  [mainnet],
+  [mainnet, foundry],
   [
     publicProvider()
   ]

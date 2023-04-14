@@ -14,9 +14,10 @@ import { ProjPointType } from '@noble/curves/abstract/weierstrass'
 import { shieldAccountABI } from './generated'
 import { signatureProofsAbi, SignatureProof, Transaction } from './types'
 
+export const nullifierMessage = "Signing this message keeps your account hidden\n\nDo not sign this message outside the domain of zkshield.io";
+
 // Adapted from:
 // https://github.com/personaelabs/efficient-zk-ecdsa/tree/main/scripts/utils
-
 export const REGISTERS = 4n
 export const STRIDE = 8n
 export const NUM_STRIDES = 256n / STRIDE // = 32
