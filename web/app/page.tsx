@@ -68,7 +68,7 @@ export default function Home() {
     const { callData, proof: _, publicSignals: __, ...userOp } = formData;
     // TODO: calculate callData from params
     // const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
-    const refinedUserOp = { callData: callData, ...userOp };
+    const refinedUserOp = { callData, ...userOp };
 
     const hashed = personalUserOpHash(
       refinedUserOp,
@@ -84,7 +84,7 @@ export default function Home() {
 
     // TODO: calculate callData from params
     // const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
-    const refinedUserOp = { callData: callData, ...userOp };
+    const refinedUserOp = { callData, ...userOp };
 
     // const signature = await signMessageAsync()
     /// first byte is v - 27 or 28, which is not part of the signature, hence slice(4)
@@ -103,7 +103,7 @@ export default function Home() {
   async function updateForm(fieldToUpdate: Partial<FormItems>) {
     const { callData, callGasLimit, maxFeePerGas, maxPriorityFeePerGas } = fieldToUpdate;
 
-    if (!/^0x[0-9a-fA-F]+$/.test(callData ?? formData.callData)) {
+    if (!/^0x[0-9a-fA-F]*$/.test(callData ?? formData.callData)) {
       setErrors((prevState) => ({
         ...prevState,
         callData: "Please enter a valid hex",
