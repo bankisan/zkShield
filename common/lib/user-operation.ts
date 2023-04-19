@@ -24,6 +24,12 @@ export const packUserOp = (op: UserOperation): `0x${string}` => {
   return ('0x' + encoded.slice(66, encoded.length - 64)) as `0x${string}`
 }
 
+export const hashUserOp = (
+  op: UserOperation,
+): string => {
+  return keccak256(packUserOp(op))
+}
+
 export const getUserOpHash = (
   op: UserOperation,
   entryPoint: `0x${string}`,

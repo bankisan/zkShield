@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import { ConnectKitButton } from "connectkit";
+import { ConnectKitButton } from 'connectkit'
 
-export default function WalletConnectButton() {
-  return (
-    <ConnectKitButton />
-  );
+const WalletConnectButton = () => {
+  return <ConnectKitButton />
 }
+
+export default WalletConnectButton

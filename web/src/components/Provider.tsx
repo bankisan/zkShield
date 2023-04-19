@@ -1,31 +1,30 @@
-'use client';
+'use client'
 
 import { ReactNode } from 'react'
 import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi'
 import { foundry } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
+import { ConnectKitProvider, getDefaultClient } from 'connectkit'
+import { NullifierContextProvider } from '@/hooks/useNullifier'
 
 const { chains, provider } = configureChains(
   [mainnet, foundry],
-  [
-    publicProvider()
-  ]
-);
+  [publicProvider()]
+)
 
 const client = createClient(
   getDefaultClient({
-    appName: "zkShield",
+    appName: 'zkShield',
     chains,
-  }),
-);
+  })
+)
 
 export default function Provider({ children }: { children: ReactNode }) {
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
-        {children}
+        <NullifierContextProvider>{children}</NullifierContextProvider>
       </ConnectKitProvider>
     </WagmiConfig>
-  );
+  )
 }

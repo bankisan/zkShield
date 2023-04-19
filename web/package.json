@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:signers": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateSignerAndTree.mts"
+    "generate:signers": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateDevSigners.mts"
   },
   "dependencies": {
     "@noble/curves": "^0.8.0",
@@ -33,7 +33,7 @@
     "ethers": "^5.7.2",
     "framer-motion": "^9.0.4",
     "lucide-react": "^0.139.0",
-    "next": "13.2.4",
+    "next": "13.3",
     "postcss": "8.4.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",

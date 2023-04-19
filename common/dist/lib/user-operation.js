@@ -17,6 +17,9 @@ export const packUserOp = (op) => {
     let encoded = encodeAbiParameters([userOperationAbi], [{ ...op, signature: '0x' }]);
     return ('0x' + encoded.slice(66, encoded.length - 64));
 };
+export const hashUserOp = (op) => {
+    return keccak256(packUserOp(op));
+};
 export const getUserOpHash = (op, entryPoint, chainId) => {
     const userOpHash = keccak256(packUserOp(op));
     const enc = encodeAbiParameters([

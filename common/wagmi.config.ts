@@ -4,5 +4,7 @@ import { foundry } from '@wagmi/cli/plugins'
 export default defineConfig({
   out: 'lib/generated.ts',
   contracts: [],
-  plugins: [foundry({ project: '../contracts' })],
+  plugins: [
+    foundry({ project: '../contracts' }),
+  ],
 })

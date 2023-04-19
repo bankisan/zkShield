@@ -18,7 +18,7 @@ contract DevDeploy is Script {
         ShieldAccount implementation = new ShieldAccount();
         ERC1967Factory factory = new ERC1967Factory();
 
-        bytes memory initializeCall = abi.encodeCall(
+        bytes memory initializeCallOneSigner = abi.encodeCall(
             ShieldAccount.initialize,
             (
                 entryPoint,
@@ -30,15 +30,38 @@ contract DevDeploy is Script {
                 1
             )
         );
-        bytes32 salt = bytes32(uint256(1));
+        bytes32 saltOneSigner = bytes32(uint256(1));
 
-        address shieldAccountProxy = factory.predictDeterministicAddress(salt);
-
+        address shieldAccountProxyOneSigner = factory
+            .predictDeterministicAddress(saltOneSigner);
         factory.deployDeterministicAndCall(
             address(implementation),
-            address(shieldAccountProxy),
-            salt,
-            initializeCall
+            address(shieldAccountProxyOneSigner),
+            saltOneSigner,
+            initializeCallOneSigner
+        );
+
+        bytes memory initializeCallTwoSigners = abi.encodeCall(
+            ShieldAccount.initialize,
+            (
+                entryPoint,
+                bytes32(
+                    uint256(
+                        6441627056893009277322941992738670682972041857144203998054174291300034842422
+                    )
+                ),
+                2
+            )
+        );
+        bytes32 saltTwoSigners = bytes32(uint256(2));
+
+        address shieldAccountProxyTwoSigners = factory
+            .predictDeterministicAddress(saltTwoSigners);
+        factory.deployDeterministicAndCall(
+            address(implementation),
+            address(shieldAccountProxyTwoSigners),
+            saltTwoSigners,
+            initializeCallTwoSigners
         );
 
         console.log("Entrypoint address");
@@ -50,8 +73,11 @@ contract DevDeploy is Script {
         console.log("Shield implementation address:");
         console.log(address(implementation));
 
-        console.log("Shield proxy address:");
-        console.log(shieldAccountProxy);
+        console.log("Shield proxy address (one signer):");
+        console.log(shieldAccountProxyOneSigner);
+
+        console.log("Shield proxy address (two signers):");
+        console.log(shieldAccountProxyTwoSigners);
 
         vm.stopBroadcast();
     }
