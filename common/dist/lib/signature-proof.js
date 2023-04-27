@@ -81,7 +81,6 @@ export const executeTransactionData = (tx) => {
 };
 export const publicKeyToAddress = (publicKey) => {
     const pub = secp256k1.ProjectivePoint.fromHex(publicKey).toRawBytes(false);
-    console.log(pub);
     const addr = "0x" + bytesToHex(keccak_256(pub.subarray(1, 65))).slice(24);
     return addr;
 };

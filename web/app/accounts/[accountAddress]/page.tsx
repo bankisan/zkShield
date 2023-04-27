@@ -200,7 +200,6 @@ export default function AccountAddressPage() {
       maxFeePerGas: feeData?.maxFeePerGas?.toBigInt() ?? 0n,
     }
 
-    console.log('What is the chainId', chainId)
     const userOpHash = getUserOpHash(
       refinedUserOp,
       entryPointAddress!,
