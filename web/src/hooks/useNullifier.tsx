@@ -9,6 +9,7 @@ import { useAccount, useSignMessage } from 'wagmi'
 type INullifierContext = {
   nullifier?: Hex
   connectNullifier: () => Promise<void>
+  signNullifierMessage: () => Promise<{ secret: bigint; nullifier: Hex }>
 }
 const NullifierContext = createContext<INullifierContext>(
   {} as INullifierContext
@@ -24,12 +25,7 @@ export const NullifierContextProvider = ({
     message: nullifierMessage,
   })
 
-  const connectNullifier = async () => {
-    if (nullifier) {
-      // TODO: Fix when switching accounts.
-      return
-    }
-
+  const signNullifierMessage = async () => {
     const nullifierMessageHashed = hashMessage(nullifierMessage!)
     const signature = await signNullifierAsync()
     const v = hexToNumber(`0x${signature.slice(130)}`)
@@ -49,14 +45,30 @@ export const NullifierContextProvider = ({
     const nullifierHex = `0x${BigInt(await hasher([...Qa, secret])).toString(
       16
     )}` as Hex
+    return { secret, nullifier: nullifierHex }
+  }
+
+  const connectNullifier = async () => {
+    if (nullifier) {
+      // TODO: Fix when switching accounts.
+      return
+    }
+    // XXX - Disabling until saving in local storage.
+    return
+    const { nullifier: nullifierHex } = await signNullifierMessage()
     setNullifier(nullifierHex)
   }
 
-  useAccount({ onConnect: connectNullifier, onDisconnect: () => setNullifier(undefined) })
+  useAccount({
+    onConnect: connectNullifier,
+    onDisconnect: () => setNullifier(undefined),
+  })
   // TODO: Add a way to connect nullifier and display status of it.
 
   return (
-    <NullifierContext.Provider value={{ nullifier, connectNullifier }}>
+    <NullifierContext.Provider
+      value={{ nullifier, connectNullifier, signNullifierMessage }}
+    >
       {children}
     </NullifierContext.Provider>
   )

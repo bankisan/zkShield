@@ -25,13 +25,24 @@ import {
   useSigner,
   useBalance,
   useFeeData,
+  useChainId,
 } from 'wagmi'
-import { Hex, bytesToHex, etherUnits, hexToBigInt, hexToBytes } from 'viem'
+import {
+  Hex,
+  bytesToHex,
+  etherUnits,
+  hashMessage,
+  hexToBigInt,
+  hexToBytes,
+  hexToNumber,
+  isAddress,
+} from 'viem'
 import {
   UserOperation,
   encodeSignature,
   entryPointABI,
   executeTransactionData,
+  getUserOpHash,
   hashUserOp,
   nullifierMessage,
   personalUserOpHash,
@@ -47,7 +58,10 @@ import { parseEther } from 'ethers/lib/utils.js'
 import signers from '../../../fixtures/signers.json'
 import { useNullifierContext } from '@/hooks/useNullifier'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-console.log(signers)
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { useFormState } from '@/hooks/useFormState'
+import { SendIcon } from 'lucide-react'
 
 export type CallData = {
   target: `0x${string}`
@@ -67,12 +81,12 @@ const toBigNumbers = (input: (string | bigint)[]): BigNumber[] => {
   return input.map((el) => BigNumber.from(el))
 }
 
-export const initialValues: FormItems = {
-  sender: `0x89ac276207912188c62d44143e429e868cC33e5E`,
-  nonce: 3n,
+const initialUserOperation: UserOperation = {
+  sender: `0x000000000000000000000000000000000000000000`,
+  nonce: 0n,
   callData: `0x`,
   initCode: `0x`,
-  callGasLimit: 100_000n,
+  callGasLimit: 140_000n,
   verificationGasLimit: 2_000_000n,
   preVerificationGas: 21_000n,
   maxFeePerGas: 0n,
@@ -103,44 +117,43 @@ const convertToWagmiUserOp = (op: UserOperation) => {
 }
 
 export default function AccountAddressPage() {
-  const { address } = useAccount()
-  const [messageHash, setMessageHash] = useState<Uint8Array>(
-    new TextEncoder().encode(nullifierMessage)
-  )
+  const [isClient, setIsClient] = useState(false)
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const params = useParams()
   const { accountAddress }: { accountAddress?: Hex } = params
 
   const { data: feeData } = useFeeData()
-  console.log(feeData)
 
-  const { nullifier } = useNullifierContext()
+  const { nullifier, signNullifierMessage } = useNullifierContext()
 
-  const [formData, setFormData] = useState(initialValues)
   const [isProving, setIsProving] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const {
-    previousStep,
-    nextStep,
-    currentStepIndex,
-    isFirstStep,
-    isLastStep,
-    goTo,
-    showSuccessMsg,
-  } = useMultiStepForm(4)
   const { data: accountNonce } = useContractRead({
     abi: shieldAccountABI,
     address: accountAddress,
     functionName: 'nonce',
   })
 
-  console.log(accountNonce)
+  const { data: entryPointAddress } = useContractRead({
+    abi: shieldAccountABI,
+    address: accountAddress,
+    functionName: 'entryPoint',
+  })
 
+  const { data: requiredSigners } = useContractRead({
+    abi: shieldAccountABI,
+    address: accountAddress,
+    functionName: 'requiredSigners',
+  })
 
-  const { data: balance }  = useBalance({
-    address: accountAddress
+  const { data: balance } = useBalance({
+    address: accountAddress,
   })
 
   const provider = useProvider()
+  const chainId = useChainId()
   const contract = useContract({
     abi: shieldAccountABI,
     address: accountAddress,
@@ -165,71 +178,64 @@ export default function AccountAddressPage() {
 
   const entryPointContract = useContract({
     abi: entryPointABI,
-    address: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+    address: entryPointAddress,
     signerOrProvider: sender,
   })
 
   const { signMessageAsync } = useSignMessage()
 
-  const handleHash = async () => {
-    const { callData, proof: _, publicSignals: __, ...userOp } = formData
-    // TODO: calculate callData from params
-    // const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
-    const refinedUserOp = {
-      callData: executeTransactionData({
-        target: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
-        payload: '0x',
-        value: 1_000_000n,
-        delegate: false,
-      }),
-      ...userOp,
-    }
-
-    // const hashedOp = hashUserOp(refinedUserOp) as Hex
-    // const result = await signTypedDataAsync({value: {
-    //   userOpHash: hashedOp,
-    //   entryPoint: `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`,
-    //   chainId: BigNumber.from(31337),
-    // }})
-
-    const hashed = personalUserOpHash(
-      refinedUserOp,
-      `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`,
-      31337n
-    ) as Hex
-    const messageHash = hexToBytes(hashed)
-    setMessageHash(messageHash)
-  }
-
   const handleProve = async () => {
-    const { callData, proof: _, publicSignals: __, ...userOp } = formData
+    const { secret } = await signNullifierMessage()
 
-    // TODO: calculate callData from params
-    // const refinedUserOp = { callData: executeTransactionData(callData), ...userOp };
-    // const refinedUserOp = { callData, ...userOp }
     const refinedUserOp = {
-      ...userOp,
+      ...initialUserOperation,
+      sender: accountAddress as Hex,
+      nonce: accountNonce?.toBigInt() ?? 0n,
       callData: executeTransactionData({
-        target: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+        target: formState.state.fields.to.value as Hex,
         payload: '0x',
-        value: 1_000_000n,
+        value: formState.state.fields.value.value,
         delegate: false,
       }),
-      maxFeePerGas: feeData?.maxFeePerGas?.toBigInt(),
+      maxFeePerGas: feeData?.maxFeePerGas?.toBigInt() ?? 0n,
     }
 
-    // const signature = await signMessageAsync()
-    /// first byte is v - 27 or 28, which is not part of the signature, hence slice(4)
-    const signatureBytes = utils.hexToBytes(formData.signature.slice(4))
-    const sig = secp256k1.Signature.fromCompact(signatureBytes)
-    const { inputs, contractVerifyInputs } = await generateInputs(
+    console.log('What is the chainId', chainId)
+    const userOpHash = getUserOpHash(
       refinedUserOp,
-      formData.nullifier as `0x${string}`,
-      nullifierMessage,
+      entryPointAddress!,
+      BigInt(chainId)
+    ) as Hex
+
+    const signedUserOp = await signMessageAsync({ message: hexToBytes(userOpHash) })
+    const messageHash = hexToBytes(hashMessage(userOpHash))
+
+    const v = hexToNumber(`0x${signedUserOp.slice(130)}`)
+    const sig = secp256k1.Signature.fromCompact(
+      signedUserOp.substring(2, 130)
+    ).addRecoveryBit(v - 27)
+
+    const pathIndices = ['0', '0', '0', '0']
+    const siblings = [
+      ['0'],
+      [
+        '14744269619966411208579211824598458697587494354926760081771325075741142829156',
+      ],
+      [
+        '7423237065226347324353380772367382631490014989348495481811164164159255474657',
+      ],
+      [
+        '11286972368698509976183087595462810875513684078608517520839298933882497716792',
+      ],
+    ]
+
+    const { inputs, contractVerifyInputs } = await generateInputs(
+      secret,
       messageHash,
-      sig
+      sig,
+      pathIndices,
+      siblings
     )
-    console.log('This is the hash:', bytesToHex(messageHash))
 
     const { rInv, R, T, U } = contractVerifyInputs
     const commitProof = await generateCommitProof(inputs)
@@ -254,134 +260,155 @@ export default function AccountAddressPage() {
       nullifier: BigInt(publicSignals[1]),
     }
 
-    const toConvert = { ...refinedUserOp }
-    toConvert.signature = encodeSignature([signatureProof])
-    const wgmi = convertToWagmiUserOp(toConvert)
+    console.log('Signature proof:', signatureProof)
+
+    const userOpWithSignature = {
+      ...refinedUserOp,
+      signature: encodeSignature([signatureProof]),
+    }
+    const finalizedUserOp = convertToWagmiUserOp(userOpWithSignature)
 
     console.log('Compare hashes')
     console.log(
       await contract?.getEthSignedMessageHash(
-        await entryPointContract?.getUserOpHash(wgmi)!
+        await entryPointContract?.getUserOpHash(finalizedUserOp)!
       )
     )
     console.log(bytesToHex(messageHash))
 
     // Runs the transaction
     await entryPointContract?.handleOps(
-      [wgmi],
-      '0x89ac276207912188c62d44143e429e868cC33e5E'
+      [finalizedUserOp],
+      '0x89ac276207912188c62d44143e429e868cC33e5E',
+      { gasLimit: BigNumber.from(10_000_000) }
+
     )
-    setFormData({ proof, publicSignals, ...formData })
   }
 
-  async function updateForm(fieldToUpdate: Partial<FormItems>) {
-    const { callData, callGasLimit, maxFeePerGas, maxPriorityFeePerGas } =
-      fieldToUpdate
-
-    if (!/^0x[0-9a-fA-F]*$/.test(callData ?? formData.callData)) {
-      setErrors((prevState) => ({
-        ...prevState,
-        callData: 'Please enter a valid hex',
-      }))
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        callData: '',
-      }))
-    }
-
-    if ((callGasLimit ?? formData.callGasLimit) < 50_000n) {
-      setErrors((prevState) => ({
-        ...prevState,
-        callGasLimit: 'callGasLimit should be at least 50,000 gwei.',
-      }))
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        callGasLimit: '',
-      }))
-    }
-
-    if ((maxFeePerGas ?? formData.maxFeePerGas) > 10_000n) {
-      setErrors((prevState) => ({
-        ...prevState,
-        maxFeePerGas: 'maxFeePerGas should be less than 10,000 gwei.',
-      }))
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        maxFeePerGas: '',
-      }))
-    }
-
-    if ((maxPriorityFeePerGas ?? formData.maxPriorityFeePerGas) > 10_000n) {
-      setErrors((prevState) => ({
-        ...prevState,
-        maxPriorityFeePerGas:
-          'maxPriorityFeePerGas should be less than 10,000 gwei.',
-      }))
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        maxPriorityFeePerGas: '',
-      }))
-    }
-
-    setFormData({ ...formData, ...fieldToUpdate })
-  }
-
-  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // Don't go to next step if there are errors
-    if (Object.values(errors).some((error) => error)) {
-      console.error(errors)
-      return
+    setIsProving(true)
+    try {
+      await handleProve()
+    } finally {
+      setIsProving(false)
     }
-    // Don't go to next step if user is not connected to wallet
-    if (isFirstStep && !address) {
-      return
-    }
-    // Don't go to next step if user has not set nullifier
-    if (currentStepIndex === 1 && !formData.nullifier) {
-      // Sign message
-      const message = await signMessageAsync({ message: nullifierMessage })
-      if (message) {
-        updateForm({ nullifier: message })
-      }
-      return
-    }
-    // Don't go to next step if user has not signed message
-    if (currentStepIndex === 2) {
-      await handleHash()
-    }
-    // Don't go to next step if user has not generated proof
-    if (isLastStep && !formData.proof && !formData.publicSignals) {
-      if (formData.signature === initialValues.signature) {
-        // Sign message
-        const message = await signMessageAsync({ message: messageHash })
-        if (message) {
-          updateForm({ signature: message })
+  }
+
+  const formState = useFormState<{ to: string; value: bigint }>(
+    { to: '', value: 0n },
+    {
+      to: (value) => {
+        if (value === '' || typeof value === 'undefined') {
+          return { valid: false, value }
         }
-      } else {
-        setIsProving(true)
-        await handleProve()
-        setIsProving(false)
-      }
-      return
+        if (isAddress(value)) {
+          return { valid: true, value }
+        }
+        return { valid: false, value, error: 'Enter a valid address' }
+      },
+      value: (value) => {
+        let v: bigint | null
+        try {
+          v = BigInt(value)
+          if (v === 0n) {
+            return { valid: false, value: v }
+          }
+          if (v < 0n) {
+            return { valid: false, value: v, error: 'Enter a positve integer' }
+          }
+          return { valid: true, value: v }
+        } catch {
+          return { valid: false, value: 0n, error: 'Enter a valid integer' }
+        }
+      },
     }
-    nextStep()
+  )
+
+  if (!isClient) {
+    return <div></div>
   }
 
   return (
     <div className='flex flex-col flex-1'>
-      <div className='flex h-24'>
-        <div className='flex flex-col flex-1 p-4'>
-          <p>Account:</p>
-          <p className='gray-100'>{accountAddress}</p>
+      <div className='flex px-4 gap-4'>
+        <div className='flex flex-col flex-1 gap-2 p-4 rounded-md border bg-neutral-900 border-neutral-700'>
+          <div className='flex flex-col'>
+            <p className='text-slate-400'>Account</p>
+            <p className='gray-100'>{accountAddress}</p>
+          </div>
+          <div className='flex gap-2'>
+            <div className='flex flex-1 flex-col'>
+              <p className='text-slate-400'>Required Signers</p>
+              <p className='gray-100'>{requiredSigners?.toString()}</p>
+            </div>
+            <div className='flex flex-1 flex-col'>
+              <p className='text-slate-400'>Confirmed txs</p>
+              <p className='gray-100'>{accountNonce?.toString()}</p>
+            </div>
+          </div>
         </div>
-        <div className='flex flex-col flex-1 p-4'>
-          Balance: {balance?.formatted} {balance?.symbol}
+        <div className='flex flex-col flex-1 p-4 rounded-md border bg-neutral-900 border-neutral-700'>
+          <p className='text-slate-400'>Balance</p>
+          <p>
+            {balance?.formatted} {balance?.symbol}
+          </p>
         </div>
+      </div>
+      <div className='flex flex-col p-4'>
+        <p>Transfer</p>
+        <form
+          className='flex flex-col w-full gap-4 p-4 rounded-md border bg-neutral-900 border-neutral-700'
+          onSubmit={handleSubmit}
+        >
+          <div className='flex flex-col gap-1.5'>
+            <Label htmlFor='to'>To</Label>
+            <Input
+              type='text'
+              name='to'
+              id='to'
+              placeholder='0x'
+              value={formState.state.fields.to.value}
+              className='w-full'
+              onChange={(e) => formState.setValue('to', e.target.value)}
+              required
+            />
+            {formState.state.fields.to.error && (
+              <p className='text-red-500 text-sm'>
+                {formState.state.fields.to.error}
+              </p>
+            )}
+          </div>
+          <div className='flex flex-col gap-1.5'>
+            <Label htmlFor='value'>Value</Label>
+            <Input
+              type='text'
+              name='value'
+              id='value'
+              placeholder='1000000'
+              value={formState.state.fields.value.value
+                .toString(10)
+                .replace(/^0+/, '')}
+              className='w-full'
+              onChange={(e) => formState.setValue('value', e.target.value)}
+              required
+            />
+            {formState.state.fields.value.error && (
+              <p className='text-red-500 text-sm'>
+                {formState.state.fields.value.error}
+              </p>
+            )}
+          </div>
+          <Button
+            isLoading={isProving}
+            disabled={!formState.state.valid}
+            variant='default'
+            Icon={SendIcon}
+            type='submit'
+          >
+            Transfer
+          </Button>
+        </form>
       </div>
     </div>
   )

@@ -34,48 +34,24 @@ createTree(4, 0n, 2).then((t) => {
 })
 
 export const generateInputs = async (
-  userOp: UserOperation,
-  nullifierSig?: `0x${string}`,
-  nullifierMessage?: string,
-  msgHash?: Uint8Array,
-  sig?: SignatureType
+  secret: bigint,
+  msgHash: Uint8Array,
+  sig: SignatureType,
+  pathIndices: string[],
+  siblings: string[][],
 ) => {
-  const priv = new Uint8Array(32).fill(1)
-  let pub
-  const nullifierMessageHashed = hashMessage(nullifierMessage!)
-  if (nullifierSig) {
-    const v = hexToNumber(`0x${nullifierSig.slice(130)}`)
-    pub = secp256k1.Signature.fromCompact(nullifierSig.substring(2, 130))
-      .addRecoveryBit(v - 27)
-      .recoverPublicKey(nullifierMessageHashed.substring(2))
-      .toHex(false)
-  } else {
-    pub = secp256k1.getPublicKey(priv)
-  }
 
-  const publicKeyPoint = secp256k1.ProjectivePoint.fromHex(pub)
-  const secret = BigInt(keccak256(nullifierSig!))
-  //
-  // const Qa = [
-  //   ...splitToRegisters(publicKeyPoint.toAffine().x),
-  //   ...splitToRegisters(publicKeyPoint.toAffine().y),
-  // ]
+  const publicKeyPoint = sig.recoverPublicKey(msgHash)
 
-  // const nullifier = BigInt(await hasher([...Qa, secret]))
-  // tree.insert(nullifier)
+  const Qa = [
+    ...splitToRegisters(publicKeyPoint.toAffine().x),
+    ...splitToRegisters(publicKeyPoint.toAffine().y),
+  ]
+
+  const nullifier = BigInt(await hasher([...Qa, secret]))
+  console.log("Same?\n", nullifier)
+  tree.insert(nullifier)
   // const { pathIndices, siblings } = tree.createProof(1)
-
-  if (!msgHash) {
-    const hashed = getUserOpHash(
-      userOp,
-      `0xFEfC6BAF87cF3684058D62Da40Ff3A795946Ab06`,
-      31337n
-    )
-    msgHash = utils.hexToBytes(hashed.slice(2))
-  }
-  if (!sig) {
-    sig = secp256k1.sign(msgHash, priv)
-  }
 
   const { r, s } = sig
   const m = mod.mod(utils.bytesToNumberBE(msgHash), secp256k1.CURVE.n)
@@ -99,14 +75,6 @@ export const generateInputs = async (
     secp256k1.CURVE.n
   )
   const U = secp256k1.ProjectivePoint.BASE.multiply(u)
-
-  const pathIndices = ['0', '0', '0', '0']
-  const siblings = [
-    ['0'],
-    ['14744269619966411208579211824598458697587494354926760081771325075741142829156'],
-    ['7423237065226347324353380772367382631490014989348495481811164164159255474657'],
-    ['11286972368698509976183087595462810875513684078608517520839298933882497716792'],
-  ]
 
   const sRegisters = splitToRegisters(s)
 
