@@ -21,7 +21,6 @@ import {
   useContractRead,
   useContractWrite,
   useContract,
-  useProvider,
   useSignTypedData,
   useSigner,
 } from 'wagmi'
@@ -121,7 +120,6 @@ export default function Home() {
     functionName: 'root',
   })
 
-  const provider = useProvider()
   const contract = useContract({
     abi: shieldAccountABI,
     address: '0x89ac276207912188c62d44143e429e868cC33e5E',
@@ -233,46 +231,10 @@ export default function Home() {
       sTHash: BigInt(publicSignals[0]),
       nullifier: BigInt(publicSignals[1]),
     }
-    //
-    // const verifyInputs = {
-    //   a: toBigNumbers(proof.pi_a.slice(0, 2)) as [BigNumber, BigNumber],
-    //   b: [
-    //     toBigNumbers(proof.pi_b[0].reverse()),
-    //     toBigNumbers(proof.pi_b[1].reverse()),
-    //   ] as [[BigNumber, BigNumber], [BigNumber, BigNumber]],
-    //   c: toBigNumbers(proof.pi_c.slice(0, 2)) as [BigNumber, BigNumber],
-    //   rInv: BigNumber.from(rInv),
-    //   R: toBigNumbers([R?.toAffine().x!, R?.toAffine().y!]) as [
-    //     BigNumber,
-    //     BigNumber
-    //   ],
-    //   T: toBigNumbers([T?.toAffine().x!, T?.toAffine().y!]) as [
-    //     BigNumber,
-    //     BigNumber
-    //   ],
-    //   U: toBigNumbers([U?.toAffine().x!, U?.toAffine().y!]) as [
-    //     BigNumber,
-    //     BigNumber
-    //   ],
-    //   sTHash: BigNumber.from(publicSignals[0]),
-    //   nullifier: BigNumber.from(publicSignals[1]),
-    // }
-    //
-    // console.log('verify:', verifyInputs)
-    // console.log('This is the next hash:', bytesToHex(messageHash))
-    // const answer = await contract?.verifyProof(
-    //   verifyInputs,
-    //   bytesToHex(messageHash)
-    // )
-    // console.log('What is the answer?', answer)
-    //
+
     const toConvert = { ...refinedUserOp }
     toConvert.signature = encodeSignature([signatureProof])
     const wgmi = convertToWagmiUserOp(toConvert)
-
-    console.log("Compare hashes")
-    console.log(await contract?.getEthSignedMessageHash(await entryPointContract?.getUserOpHash(wgmi)!))
-    console.log(bytesToHex(messageHash))
 
     // Runs the transaction
     await entryPointContract?.handleOps(
@@ -282,7 +244,7 @@ export default function Home() {
     setFormData({ proof, publicSignals, ...formData })
   }
 
-  async function updateForm(fieldToUpdate: Partial<FormItems>) {
+  const updateForm = async (fieldToUpdate: Partial<FormItems>) => {
     const { callData, callGasLimit, maxFeePerGas, maxPriorityFeePerGas } =
       fieldToUpdate
 

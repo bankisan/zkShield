@@ -93,15 +93,15 @@ const accountsToSigners = {
 }
 
 // Create two test files:
-// - Nullifiers to account addresses
+// - Addresses to account addresses
 // - Accounts to signers
 const signersToAccounts = Object.entries(accountsToSigners).reduce<
   Record<Hex, Hex[]>
 >((current, [accountAddress, accountDetails]) => {
   for (const signer of accountDetails.signers) {
-    // const nullifer = `0x${signer.nullifier.toString(16)}` as Hex
-    const { nullifier } = signer
-    current[nullifier] = [accountAddress as Hex, ...(current[nullifier] || [])]
+    // Use the address for ease of finding.
+    const { address } = signer
+    current[address] = [accountAddress as Hex, ...(current[address] || [])]
   }
   return current
 }, {})

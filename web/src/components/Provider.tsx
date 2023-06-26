@@ -1,30 +1,38 @@
 'use client'
 
+import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactNode } from 'react'
-import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi'
-import { foundry } from 'wagmi/chains'
+import { WagmiConfig, createConfig, configureChains, mainnet } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { ConnectKitProvider, getDefaultClient } from 'connectkit'
+import { foundry } from 'wagmi/chains'
+
+import { WALLET_CONNECT_ID } from '@/config'
 import { NullifierContextProvider } from '@/hooks/useNullifier'
 
-const { chains, provider } = configureChains(
+const { publicClient, webSocketPublicClient } = configureChains(
   [mainnet, foundry],
   [publicProvider()]
 )
 
-const client = createClient(
-  getDefaultClient({
+const queryClient = new QueryClient()
+const config = createConfig(
+  getDefaultConfig({
+    walletConnectProjectId: WALLET_CONNECT_ID,
     appName: 'zkShield',
-    chains,
+    publicClient,
+    webSocketPublicClient,
+    chains: [mainnet, foundry],
   })
 )
-
 export default function Provider({ children }: { children: ReactNode }) {
   return (
-    <WagmiConfig client={client}>
-      <ConnectKitProvider>
-        <NullifierContextProvider>{children}</NullifierContextProvider>
-      </ConnectKitProvider>
-    </WagmiConfig>
+    <QueryClientProvider client={queryClient}>
+      <WagmiConfig config={config}>
+        <ConnectKitProvider>
+          <NullifierContextProvider>{children}</NullifierContextProvider>
+        </ConnectKitProvider>
+      </WagmiConfig>
+    </QueryClientProvider>
   )
 }

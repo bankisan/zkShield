@@ -40,18 +40,7 @@ export const generateInputs = async (
   pathIndices: string[],
   siblings: string[][],
 ) => {
-
   const publicKeyPoint = sig.recoverPublicKey(msgHash)
-
-  const Qa = [
-    ...splitToRegisters(publicKeyPoint.toAffine().x),
-    ...splitToRegisters(publicKeyPoint.toAffine().y),
-  ]
-
-  const nullifier = BigInt(await hasher([...Qa, secret]))
-  console.log("Same?\n", nullifier)
-  tree.insert(nullifier)
-  // const { pathIndices, siblings } = tree.createProof(1)
 
   const { r, s } = sig
   const m = mod.mod(utils.bytesToNumberBE(msgHash), secp256k1.CURVE.n)
@@ -75,7 +64,6 @@ export const generateInputs = async (
     secp256k1.CURVE.n
   )
   const U = secp256k1.ProjectivePoint.BASE.multiply(u)
-
   const sRegisters = splitToRegisters(s)
 
   const URegisters = [

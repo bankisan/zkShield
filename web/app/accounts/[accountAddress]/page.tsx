@@ -19,13 +19,12 @@ import {
   useSignMessage,
   useContractRead,
   useContractWrite,
-  useContract,
-  useProvider,
   useSignTypedData,
-  useSigner,
   useBalance,
   useFeeData,
   useChainId,
+  useQuery,
+  usePublicClient,
 } from 'wagmi'
 import {
   Hex,
@@ -56,12 +55,18 @@ import { parseEther } from 'ethers/lib/utils.js'
 // XXX - This will be removed once we have a kv-store.
 // Using only for development.
 import signers from '../../../fixtures/signers.json'
+import accounts from '../../../fixtures/accounts.json'
 import { useNullifierContext } from '@/hooks/useNullifier'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { useFormState } from '@/hooks/useFormState'
 import { SendIcon } from 'lucide-react'
+import { sign } from 'crypto'
+import { getMe } from '@/services/api'
+import { QueryKey } from 'react-query'
+import { getWalletClient } from '@wagmi/core'
+
 
 export type CallData = {
   target: `0x${string}`
@@ -122,6 +127,10 @@ export default function AccountAddressPage() {
     setIsClient(true)
   }, [])
 
+  const meKey: QueryKey = ['me'] as QueryKey
+  const meQuery = useQuery(meKey, getMe({ address: 'asdfa' }))
+  console.log(meQuery.data)
+
   const params = useParams()
   const { accountAddress }: { accountAddress?: Hex } = params
 
@@ -152,52 +161,53 @@ export default function AccountAddressPage() {
     address: accountAddress,
   })
 
-  const provider = useProvider()
+  const provider = usePublicClient()
   const chainId = useChainId()
-  const contract = useContract({
-    abi: shieldAccountABI,
-    address: accountAddress,
-    signerOrProvider: provider,
-  })
-  const [sender, setSender] = useState(
-    () =>
-      new ethers.Wallet(
-        '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
-        provider
-      )
-  )
+  // const [sender, setSender] = useState(
+  //   () =>
+  //     new ethers.Wallet(
+  //       '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
+  //       provider.g
+  //     )
+  // )
+  //
+  // useEffect(() => {
+  //   setSender(
+  //     new ethers.Wallet(
+  //       '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
+  //       provider
+  //     )
+  //   )
+  // }, [provider])
 
-  useEffect(() => {
-    setSender(
-      new ethers.Wallet(
-        '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
-        provider
-      )
-    )
-  }, [provider])
-
-  const entryPointContract = useContract({
-    abi: entryPointABI,
-    address: entryPointAddress,
-    signerOrProvider: sender,
-  })
-
+  // const entryPointContract = useContract({
+  //   abi: entryPointABI,
+  //   address: entryPointAddress,
+  //   signerOrProvider: sender,
+  // })
+  //
   const { signMessageAsync } = useSignMessage()
 
   const handleProve = async () => {
-    const { secret } = await signNullifierMessage()
+    const { nullifier, secret } = await signNullifierMessage()
+
+    const { pathIndices, siblings } = (
+      (accounts[accountAddress as any].signers as []) ?? []
+    ).find((signer) => signer.nullifier === nullifier)
+    console.log(pathIndices)
+    console.log(siblings)
 
     const refinedUserOp = {
       ...initialUserOperation,
       sender: accountAddress as Hex,
-      nonce: accountNonce?.toBigInt() ?? 0n,
+      nonce: accountNonce ?? 0n,
       callData: executeTransactionData({
         target: formState.state.fields.to.value as Hex,
         payload: '0x',
         value: formState.state.fields.value.value,
         delegate: false,
       }),
-      maxFeePerGas: feeData?.maxFeePerGas?.toBigInt() ?? 0n,
+      maxFeePerGas: feeData?.maxFeePerGas ?? 0n,
     }
 
     const userOpHash = getUserOpHash(
@@ -205,28 +215,17 @@ export default function AccountAddressPage() {
       entryPointAddress!,
       BigInt(chainId)
     ) as Hex
-
-    const signedUserOp = await signMessageAsync({ message: hexToBytes(userOpHash) })
+    // hexToBytes(userOpHash)
+    // Test the next line before checking this.
+    const signedUserOp = await signMessageAsync({
+      message: userOpHash,
+    })
     const messageHash = hexToBytes(hashMessage(userOpHash))
 
     const v = hexToNumber(`0x${signedUserOp.slice(130)}`)
     const sig = secp256k1.Signature.fromCompact(
       signedUserOp.substring(2, 130)
     ).addRecoveryBit(v - 27)
-
-    const pathIndices = ['0', '0', '0', '0']
-    const siblings = [
-      ['0'],
-      [
-        '14744269619966411208579211824598458697587494354926760081771325075741142829156',
-      ],
-      [
-        '7423237065226347324353380772367382631490014989348495481811164164159255474657',
-      ],
-      [
-        '11286972368698509976183087595462810875513684078608517520839298933882497716792',
-      ],
-    ]
 
     const { inputs, contractVerifyInputs } = await generateInputs(
       secret,
@@ -237,8 +236,9 @@ export default function AccountAddressPage() {
     )
 
     const { rInv, R, T, U } = contractVerifyInputs
-    const commitProof = await generateCommitProof(inputs)
     console.log('proving...')
+    const commitProof = await generateCommitProof(inputs)
+    console.log('more proving')
     const { proof, publicSignals } = commitProof
     console.log('proof completed !')
     console.log(proof)
@@ -268,20 +268,19 @@ export default function AccountAddressPage() {
     const finalizedUserOp = convertToWagmiUserOp(userOpWithSignature)
 
     console.log('Compare hashes')
-    console.log(
-      await contract?.getEthSignedMessageHash(
-        await entryPointContract?.getUserOpHash(finalizedUserOp)!
-      )
-    )
+    // console.log(
+    //   await contract?.getEthSignedMessageHash(
+    //     await entryPointContract?.getUserOpHash(finalizedUserOp)!
+    //   )
+    // )
     console.log(bytesToHex(messageHash))
 
     // Runs the transaction
-    await entryPointContract?.handleOps(
-      [finalizedUserOp],
-      '0x89ac276207912188c62d44143e429e868cC33e5E',
-      { gasLimit: BigNumber.from(10_000_000) }
-
-    )
+    // await entryPointContract?.handleOps(
+    //   [finalizedUserOp],
+    //   '0x89ac276207912188c62d44143e429e868cC33e5E',
+    //   { gasLimit: BigNumber.from(10_000_000) }
+    // )
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
