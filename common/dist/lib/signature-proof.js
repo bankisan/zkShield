@@ -8,6 +8,7 @@ import * as mod from '@noble/curves/abstract/modular';
 import * as utils from '@noble/curves/abstract/utils';
 import { shieldAccountABI } from './generated';
 import { signatureProofsAbi } from './types';
+export const nullifierMessage = "Signing this message keeps your account hidden\n\nDo not sign this message outside the domain of zkshield.io";
 // Adapted from:
 // https://github.com/personaelabs/efficient-zk-ecdsa/tree/main/scripts/utils
 export const REGISTERS = 4n;
@@ -80,7 +81,6 @@ export const executeTransactionData = (tx) => {
 };
 export const publicKeyToAddress = (publicKey) => {
     const pub = secp256k1.ProjectivePoint.fromHex(publicKey).toRawBytes(false);
-    console.log(pub);
     const addr = "0x" + bytesToHex(keccak_256(pub.subarray(1, 65))).slice(24);
     return addr;
 };

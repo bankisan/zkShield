@@ -1,6 +1,7 @@
 import { IncrementalMerkleTree } from '@zk-kit/incremental-merkle-tree';
 import { ProjPointType } from '@noble/curves/abstract/weierstrass';
 import { SignatureProof, Transaction } from './types';
+export declare const nullifierMessage = "Signing this message keeps your account hidden\n\nDo not sign this message outside the domain of zkshield.io";
 export declare const REGISTERS = 4n;
 export declare const STRIDE = 8n;
 export declare const NUM_STRIDES: bigint;

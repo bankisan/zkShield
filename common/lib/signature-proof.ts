@@ -14,9 +14,10 @@ import { ProjPointType } from '@noble/curves/abstract/weierstrass'
 import { shieldAccountABI } from './generated'
 import { signatureProofsAbi, SignatureProof, Transaction } from './types'
 
+export const nullifierMessage = "Signing this message keeps your account hidden\n\nDo not sign this message outside the domain of zkshield.io";
+
 // Adapted from:
 // https://github.com/personaelabs/efficient-zk-ecdsa/tree/main/scripts/utils
-
 export const REGISTERS = 4n
 export const STRIDE = 8n
 export const NUM_STRIDES = 256n / STRIDE // = 32
@@ -107,7 +108,6 @@ export const executeTransactionData = (tx: Transaction) => {
 
 export const publicKeyToAddress = (publicKey: Uint8Array): string => { 
   const pub = secp256k1.ProjectivePoint.fromHex(publicKey).toRawBytes(false)
-  console.log(pub)
   const addr = "0x" + bytesToHex(keccak_256(pub.subarray(1, 65))).slice(24);
   return addr;
 }

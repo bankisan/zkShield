@@ -7,7 +7,7 @@ export interface Input {
     U: bigint[][];
     secret: bigint;
     pathIndices: any[];
-    siblings: number[];
+    siblings: string[][];
 }
 
 /// Proof output from the snarkjs proof generation

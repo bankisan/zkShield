@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   experimental: {
     appDir: true,
@@ -6,7 +7,7 @@ const nextConfig = {
   transpilePackages: ['common'],
   webpack: function (config, options) {
     if (!options.isServer) {
-      config.resolve.fallback.fs = false;
+      config.resolve.fallback = { fs: false, net: false, tls: false };
     }
     return config;
   },
