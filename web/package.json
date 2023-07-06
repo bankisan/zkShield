@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:signers": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateDevSigners.mts"
+    "generate:signers": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateDevSigners.mts",
+    "generate:types": "npx supabase gen types typescript --project-id \"c635e1503780e629cd28114f22a1b269\" > src/utils/db.ts"
   },
   "dependencies": {
     "@noble/curves": "^0.8.0",
@@ -18,6 +19,7 @@
     "@radix-ui/react-switch": "^1.0.1",
     "@radix-ui/react-toggle-group": "^1.0.2",
     "@rainbow-me/rainbowkit": "^0.12.6",
+    "@supabase/supabase-js": "^2.26.0",
     "@types/node": "18.15.11",
     "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
@@ -34,6 +36,7 @@
     "eslint-config-next": "13.2.4",
     "ethers": "^5.7.2",
     "framer-motion": "^9.0.4",
+    "jsonwebtoken": "^9.0.1",
     "lucide-react": "^0.139.0",
     "next": "13.3",
     "postcss": "8.4.21",
@@ -51,6 +54,7 @@
     "wagmi": "^1.0.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2",
     "encoding": "^0.1.13",
     "lokijs": "^1.5.12",
     "pino-pretty": "^10.0.0"
