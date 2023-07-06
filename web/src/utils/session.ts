@@ -16,17 +16,20 @@ export type ISession = {
 	nonce?: string;
 	chainId?: number;
 	address?: string;
+	token?: string;
 };
 
 export class Session {
 	nonce?: string;
 	chainId?: number;
 	address?: string;
+	token?: string;
 
 	constructor(session?: ISession) {
 		this.nonce = session?.nonce;
 		this.chainId = session?.chainId;
 		this.address = session?.address;
+		this.token = session?.token;
 	}
 
 	static async fromRequest(req: NextRequest): Promise<Session> {
@@ -42,12 +45,13 @@ export class Session {
 		this.nonce = undefined;
 		this.chainId = undefined;
 		this.address = undefined;
+		this.token = undefined;
 
 		return this.persist(res);
 	}
 
 	toJSON(): ISession {
-		return { nonce: this.nonce, address: this.address, chainId: this.chainId };
+		return { nonce: this.nonce, address: this.address, chainId: this.chainId, token: this.token };
 	}
 
 	async persist(res: NextResponse): Promise<void> {
