@@ -36,6 +36,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { useFormState } from '@/hooks/useFormState'
 import { SendIcon } from 'lucide-react'
+import { useClientSupabase } from '@/hooks/useSupabase'
+import { Database } from '@/utils/db'
 
 
 export type CallData = {
@@ -70,6 +72,17 @@ export default function AccountAddressPage() {
   const [isClient, setIsClient] = useState(false)
   useEffect(() => {
     setIsClient(true)
+  }, [])
+
+  const [addresses, setAddresses] = useState<string[]>([])
+  const supabase = useClientSupabase<Database>();
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await supabase!.from('addresses').select('*');
+      setAddresses(() => data?.map((d) => d.address) ?? []);
+    }
+    supabase && getData();
   }, [])
 
   const params = useParams()
@@ -304,6 +317,11 @@ export default function AccountAddressPage() {
             Transfer
           </Button>
         </form>
+      </div>
+      {/* Supabase Test Code */}
+      <div>
+        <div>Supabase Addresses:</div>
+        {addresses.map((address) => (<div>Address: {address}</div>))}
       </div>
     </div>
   )

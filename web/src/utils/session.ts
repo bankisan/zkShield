@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sealData, unsealData } from "iron-session";
 
 const COOKIE_NAME = "zkshield-siwe"
 
-if (!process.env.SESSION_SECRET) {
-	throw new Error("SESSION_SECRET cannot be empty.");
-}
-
 const SESSION_OPTIONS = {
-	ttl: 60 * 60 * 24 * 30, // 30 days
-	password: process.env.SESSION_SECRET!,
+	ttl: 60 * 60 * 1, // 1 hr, matching the TTL of the Supabase token
 };
 
 export type ISession = {
@@ -34,11 +28,8 @@ export class Session {
 
 	static async fromRequest(req: NextRequest): Promise<Session> {
 		const sessionCookie = req.cookies.get(COOKIE_NAME)?.value;
-
 		if (!sessionCookie) return new Session();
-		return new Session(
-			await unsealData<ISession>(sessionCookie, SESSION_OPTIONS)
-		);
+		return new Session(JSON.parse(sessionCookie));
 	}
 
 	clear(res: NextResponse): Promise<void> {
@@ -55,13 +46,6 @@ export class Session {
 	}
 
 	async persist(res: NextResponse): Promise<void> {
-		res.cookies.set(
-			COOKIE_NAME,
-			await sealData(this.toJSON(), SESSION_OPTIONS),
-			{
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-			}
-		);
+		res.cookies.set(COOKIE_NAME, JSON.stringify(this.toJSON()), { httpOnly: false, expires: new Date(Date.now() + SESSION_OPTIONS.ttl * 1000)});
 	}
 }
