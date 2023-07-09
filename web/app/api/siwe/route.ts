@@ -31,7 +31,6 @@ const tap = async <T>(
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const session = await Session.fromRequest(req);
-
   return NextResponse.json(session.toJSON());
 };
 
@@ -63,19 +62,20 @@ export const POST = async (req: NextRequest) => {
       .select("*")
       .eq("address", fields.address)
       .single();
-    if (error) {
+    if (error && error.code !== "PGRST116") {
       return tap(new NextResponse(String(error), { status: 400 }), (res) =>
         session.clear(res)
       );
     }
 
     if (!address) {
-      const { data: address, error } = await supabase
+      const { error } = await supabase
         .from("addresses")
         .insert([{ address: fields.address }])
         .select()
         .single();
       if (error) {
+        console.log(error);
         return tap(new NextResponse(String(error), { status: 400 }), (res) =>
           session.clear(res)
         );
@@ -90,10 +90,9 @@ export const POST = async (req: NextRequest) => {
         aud: "authenticated",
         address: fields.address,
       },
-      process.env.JWT!,
-      { expiresIn: "1h" }
+      process.env.SUPABASE_JWT!,
+      { expiresIn: "1d", algorithm: "HS256" }
     );
-
   } catch (error) {
     switch (error) {
       case SiweErrorType.INVALID_NONCE:
@@ -114,6 +113,5 @@ export const POST = async (req: NextRequest) => {
 
 export const DELETE = async (req: NextRequest) => {
   const session = await Session.fromRequest(req);
-
   return tap(new NextResponse(""), (res) => session.clear(res));
 };

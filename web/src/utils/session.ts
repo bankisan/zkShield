@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const COOKIE_NAME = "zkshield-siwe"
 
 const SESSION_OPTIONS = {
-	ttl: 60 * 60 * 1, // 1 hr, matching the TTL of the Supabase token
+	ttl: 60 * 60 * 24 * 1, // 1d, matching the TTL of the Supabase token
 };
 
 export type ISession = {
