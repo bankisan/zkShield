@@ -1,5 +1,5 @@
 import FormWrapper from "./FormWrapper";
-import { FormItems, initialValues } from "@/app/page";
+import { FormItems } from "@/app/accounts/[accountAddress]/@legacy/page";
 
 type StepProps = FormItems & {
   isProving: boolean;

@@ -24,8 +24,8 @@ const InvitationList = () => {
   return (
     <div className="flex gap-2">
       <ul>
-        {accounts?.map((account) => (
-          <Card className="mb-4 hover:bg-slate-100 hover:cursor-pointer">
+        {accounts?.map((account, i) => (
+          <Card key={i} className="mb-4 hover:bg-muted hover:cursor-pointer">
             <CardHeader>{account.id}</CardHeader>
             <CardContent>
               <li>
@@ -33,8 +33,8 @@ const InvitationList = () => {
                   <div
                     className={"flex flex-row min-w-[200px] justify-between"}
                   >
-                    <div>{account.id} Members</div>
-                    <Badge variant={"outline"}>
+                    <div className={"text-sm"}>{account.id} Members</div>
+                    <Badge variant={"outline"} className={"uppercase"}>
                       <div>{account.status}</div>
                     </Badge>
                   </div>

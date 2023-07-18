@@ -30,8 +30,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormState } from "@/hooks/useFormState";
 import { SendIcon } from "lucide-react";
-import { useClientSupabase } from "@/hooks/useSupabase";
-import { Database } from "@/utils/db";
 
 export type CallData = {
   target: `0x${string}`;
@@ -106,9 +104,11 @@ export default function AccountAddressPage() {
   const handleProve = async () => {
     const { nullifier, secret } = await signNullifierMessage();
 
-    const { pathIndices, siblings } = (
-      (accounts[accountAddress as any].signers as []) ?? []
-    ).find((signer) => signer.nullifier === nullifier);
+    // @ts-ignore
+    const { pathIndices, siblings } = // @ts-ignore
+    ((accounts[accountAddress as any].signers as []) ?? [])
+      // @ts-ignore
+      .find((signer) => signer.nullifier === nullifier);
     console.log(pathIndices);
     console.log(siblings);
 
@@ -301,13 +301,6 @@ export default function AccountAddressPage() {
             Transfer
           </Button>
         </form>
-      </div>
-      {/* Supabase Test Code */}
-      <div>
-        <div>Supabase Addresses:</div>
-        {addresses.map((address) => (
-          <div>Address: {address}</div>
-        ))}
       </div>
     </div>
   );

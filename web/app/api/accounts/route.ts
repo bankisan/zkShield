@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // everywhere else in the app when the user is not authenticated.
     return NextResponse.json({ error: "not signed in" })
   }
-
-  const accounts = signers[address] as string[]
+  
+  const accounts = (signers as {[k: string]: string[]})[address] as string[]
   return NextResponse.json({ accounts })
 }
