@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import { SupabaseClient, createClient } from "@supabase/supabase-js";
 import { GenericSchema } from "@supabase/supabase-js/dist/module/lib/types";
 import { useCookie } from "@/hooks/useCookie";
-
-const COOKIE_NAME = "zkshield-siwe";
+import { COOKIE_NAME, SUPABASE_ANON_KEY, SUPABASE_URL } from "@/config";
 
 // Un-typed client as we don't have access to the Database, SchemaName, and Schema.
 let supabaseClientSingleton: SupabaseClient<any, any, any> | null = null;
@@ -27,8 +26,8 @@ export const useClientSupabase = <
   >(
     supabaseClientSingleton ??
       createClient<Database, SchemaName, Schema>(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        SUPABASE_URL!,
+        SUPABASE_ANON_KEY!,
         {
           auth: {
             persistSession: false,
@@ -49,8 +48,8 @@ export const useClientSupabase = <
 
         // Create Supabase client with token from session.
         const client = createClient<Database, SchemaName, Schema>(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          SUPABASE_URL!,
+          SUPABASE_ANON_KEY!,
           {
             global: {
               headers: {
