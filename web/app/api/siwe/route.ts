@@ -8,7 +8,7 @@ import { Database } from "@/utils/db";
 import { SUPABASE_JWT, SUPABASE_SERVICE_KEY, SUPABASE_URL } from "@/config";
 
 // References
-// https://github.com/m1guelpf/nextjs13-connectkit-siwe/blob/main/src/
+// https://github.com/m1guelpf/nextjs13-connectkit-siwe
 
 const supabase = createClient<Database>(
   SUPABASE_URL,
