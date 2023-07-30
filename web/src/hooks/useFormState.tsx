@@ -46,6 +46,7 @@ export function useFormState<
         ...acc,
         [nextKey]: {
           ...(nextKey in inputValidators
+            // @ts-ignore
             ? inputValidators[nextKey as keyof V](nextValue)
             : { valid: true }),
           value: deepClone(nextValue),
@@ -93,8 +94,10 @@ export function useFormState<
 
       const validatorFunc = inputValidators[key]
 
+      //@ts-ignore
       const validator = validatorFunc ? validatorFunc(val) : { valid: true }
       updatedState.fields[key].valid = validator.valid
+      //@ts-ignore
       updatedState.fields[key].error = validator.error
 
       const firstInvalidField = Object.keys(updatedState.fields).find(
