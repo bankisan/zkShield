@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate:signers": "node --loader ts-node/esm --experimental-specifier-resolution=node --no-warnings scripts/generateDevSigners.mts",
-    "generate:types": "npx supabase gen types typescript --project-id \"c635e1503780e629cd28114f22a1b269\" > src/utils/db.ts"
+    "generate:types": "npx supabase gen types typescript --project-id ${PROJECT_ID} > src/utils/db.ts"
   },
   "dependencies": {
     "@noble/curves": "^0.8.0",

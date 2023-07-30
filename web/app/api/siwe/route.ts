@@ -5,13 +5,14 @@ import { createClient } from "@supabase/supabase-js";
 
 import { Session } from "@/utils/session";
 import { Database } from "@/utils/db";
+import { SUPABASE_JWT, SUPABASE_SERVICE_KEY, SUPABASE_URL } from "@/config";
 
 // References
-// https://github.com/m1guelpf/nextjs13-connectkit-siwe/blob/main/src/
+// https://github.com/m1guelpf/nextjs13-connectkit-siwe
 
 const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_KEY,
   {
     auth: {
       persistSession: false,
@@ -90,7 +91,7 @@ export const POST = async (req: NextRequest) => {
         aud: "authenticated",
         address: fields.address,
       },
-      process.env.SUPABASE_JWT!,
+      SUPABASE_JWT,
       { expiresIn: "1d", algorithm: "HS256" }
     );
   } catch (error) {
