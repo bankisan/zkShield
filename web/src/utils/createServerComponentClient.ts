@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 
 import { SupabaseClient, createClient } from "@supabase/supabase-js";
 import { GenericSchema } from "@supabase/supabase-js/dist/module/lib/types";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/config";
 
 const COOKIE_NAME = "zkshield-siwe";
 
@@ -19,8 +20,8 @@ export const createServerComponentClient = <
   const session = cookies().get(COOKIE_NAME)?.value;
   const anonClient = () =>
     createClient<Database, SchemaName, Schema>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      SUPABASE_URL!,
+      SUPABASE_ANON_KEY!,
       {
         auth: {
           persistSession: false,
@@ -40,8 +41,8 @@ export const createServerComponentClient = <
   }
 
   return createClient<Database, SchemaName, Schema>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL!,
+    SUPABASE_ANON_KEY!,
     {
       global: {
         headers: {
