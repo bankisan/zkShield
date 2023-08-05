@@ -1712,7 +1712,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-slot@npm:1.0.2":
+"@radix-ui/react-slot@npm:1.0.2, @radix-ui/react-slot@npm:^1.0.2":
   version: 1.0.2
   resolution: "@radix-ui/react-slot@npm:1.0.2"
   dependencies:
@@ -10842,6 +10842,7 @@ __metadata:
     "@radix-ui/react-label": ^2.0.0
     "@radix-ui/react-radio-group": ^1.1.1
     "@radix-ui/react-separator": ^1.0.1
+    "@radix-ui/react-slot": ^1.0.2
     "@radix-ui/react-switch": ^1.0.1
     "@radix-ui/react-tabs": ^1.0.4
     "@radix-ui/react-toggle-group": ^1.0.2
