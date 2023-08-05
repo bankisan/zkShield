@@ -13,11 +13,11 @@ let supabaseClientSingleton: SupabaseClient<any, any, any> | null = null;
 export const useClientSupabase = <
   Database = any,
   SchemaName extends string & keyof Database = "public" extends keyof Database
-    ? "public"
-    : string & keyof Database,
+  ? "public"
+  : string & keyof Database,
   Schema extends GenericSchema = Database[SchemaName] extends GenericSchema
-    ? Database[SchemaName]
-    : any
+  ? Database[SchemaName]
+  : any
 >(): SupabaseClient<Database, SchemaName, Schema> | null => {
   const anonClient = () => {
     console.log("Creating anonymous client on client-side!");
@@ -45,7 +45,7 @@ export const useClientSupabase = <
       let token: string | null = null;
 
       try {
-        const token = JSON.parse(decodeURIComponent(session)).token;
+        token = JSON.parse(decodeURIComponent(session)).token;
         if (!token) {
           throw new Error("Missing token in session!");
         }
