@@ -1,33 +1,17 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useClientSupabase } from "@/hooks/useSupabase";
-import { Database } from "@/utils/db";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ShieldAccount } from "@/types";
-import { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
-import { Card, CardContent, CardHeader } from "./ui/card";
 import { classNameMerge } from "@/utils/classNameMerge";
 
-const AccountList = () => {
+const AccountList = (props: { accounts: ShieldAccount[] | null }) => {
   const pathname = usePathname();
-  const supabase = useClientSupabase<Database>();
-  const [accounts, setAccounts] = useState<ShieldAccount[]>([]);
-
-  useEffect(() => {
-    supabase &&
-      (async () => {
-        const { data: accounts, error } = await supabase!
-          .from("shield_accounts")
-          .select("*");
-        if (!error) setAccounts(accounts);
-      })();
-  }, [supabase]);
-
   return (
     <div className="flex gap-2">
       <ul>
-        {accounts?.map((account, i) => (
+        {props.accounts?.map((account, i) => (
           <a key={i} href={`/accounts/${account.id}`}>
             <Card
               className={classNameMerge(

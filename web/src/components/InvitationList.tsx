@@ -1,6 +1,6 @@
 "use client";
 
-import { useClientSupabase } from "@/hooks/useSupabase";
+import { useClientSupabase } from "@/hooks/useClientSupabase";
 import { Database } from "@/utils/db";
 import { ShieldAccount } from "@/types";
 import { useEffect, useState } from "react";

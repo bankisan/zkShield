@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { useClientSupabase } from "@/hooks/useSupabase";
+import { useClientSupabase } from "@/hooks/useClientSupabase";
 import { ShieldAccountUserOp } from "@/types";
 import { Database } from "@/utils/db";
 import { useEffect, useState } from "react";

@@ -8,7 +8,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { NewInvitationDialog } from "@/components/dialogs/NewInvitationDialog";
-import { useClientSupabase } from "@/hooks/useSupabase";
+import { useClientSupabase } from "@/hooks/useClientSupabase";
 import { Database } from "@/utils/db";
 import { useEffect, useState } from "react";
 import type { Invitation as InvitationType } from "@/types";
