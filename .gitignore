@@ -13,3 +13,6 @@ node_modules/
 !.yarn/cache
 #.pnp.*
 yarn-error.log
+
+supabase/.branches
+supabase/.temp
