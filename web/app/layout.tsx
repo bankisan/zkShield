@@ -11,6 +11,7 @@ import { NewShieldAccountDialog } from "@/components/dialogs/NewShieldAccountDia
 import InvitationList from "@/components/InvitationList";
 import { createServerComponentClient } from "@/utils/createServerComponentClient";
 import { Database } from "@/utils/db";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
   title: "zkShield",
@@ -55,6 +56,7 @@ export default async function RootLayout({
             <main className="flex w-full h-full">{children}</main>
           </div>
         </Provider>
+        <Toaster />
       </body>
     </html>
   );

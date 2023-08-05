@@ -20,6 +20,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.1",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.4",
     "@radix-ui/react-toggle-group": "^1.0.2",
     "@rainbow-me/rainbowkit": "^0.12.6",
     "@supabase/supabase-js": "^2.26.0",

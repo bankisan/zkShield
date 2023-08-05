@@ -1,7 +1,7 @@
 "use client";
 
 import { useClientSupabase } from "@/hooks/useClientSupabase";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,15 +10,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Database } from "@/utils/db";
 import { useCallback, useState } from "react";
 import { useFormState } from "@/hooks/useFormState";
+import { useToast } from "@/components/ui/use-toast";
 
 export const NewShieldAccountDialog = () => {
   const supabase = useClientSupabase<Database>();
+  const { toast } = useToast()
+  const [open, setOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const formState = useFormState<{ name: string }>(
     {
       name: "",
@@ -34,52 +38,67 @@ export const NewShieldAccountDialog = () => {
   );
 
   const submit = useCallback(async () => {
-    if (!supabase) {
-      console.log("Supabase not initialized");
-      return;
-    }
+    setErrorMessage(null);
+    try {
+      if (!supabase) {
+        throw "Error intializing Supabase client.";
+      }
 
-    // Create Shield Account
-    const { data: shieldAccount, error: shieldAccountError } = await supabase
-      .from("shield_accounts")
-      .insert([{ name: formState.getValues().name }])
-      .select()
-      .single();
-
-    if (!shieldAccount || shieldAccountError) {
-      console.error("Shield Account Creation Error: " + shieldAccountError);
-      return;
-    }
-
-    // Retrieve Address (self)
-    const { data: self, error: addressError } = await supabase
-      .from("addresses")
-      .select()
-      .single();
-    if (!self || addressError) {
-      console.log("Address Retrieval Error: " + addressError);
-      return;
-    }
-
-    // Associate Address (self) with Shield Account
-    const { data: shieldAccountAddress, error: shieldAccountAddressError } =
-      await supabase
-        .from("shield_account_addresses")
-        .insert([
-          { shield_account_id: shieldAccount.id, address: self.address },
-        ])
+      // Create Shield Account
+      const { data: shieldAccount, error: shieldAccountError } = await supabase
+        .from("shield_accounts")
+        .insert([{ name: formState.getValues().name }])
         .select()
         .single();
 
-    if (!shieldAccountAddress || shieldAccountAddressError) {
-      console.error(
-        "Shield Account Address Creation Error: " + shieldAccountAddressError
-      );
+      if (!shieldAccount || shieldAccountError) {
+        throw (
+          "Error creating zkShield account. " +
+          (shieldAccountError ? shieldAccountError.message : "")
+        );
+      }
+
+      // Retrieve Address (self)
+      const { data: self, error: addressError } = await supabase
+        .from("addresses")
+        .select()
+        .single();
+      if (!self || addressError) {
+        throw (
+          "Error retrieving user address. " +
+          (addressError ? addressError.message : "")
+        );
+      }
+
+      // Associate Address (self) with Shield Account
+      const { data: shieldAccountAddress, error: shieldAccountAddressError } =
+        await supabase
+          .from("shield_account_addresses")
+          .insert([
+            { shield_account_id: shieldAccount.id, address: self.address },
+          ])
+          .select()
+          .single();
+
+      if (!shieldAccountAddress || shieldAccountAddressError) {
+        throw (
+          "Error associating zkShield account with address. " +
+          (shieldAccountAddressError ? shieldAccountAddressError.message : "")
+        );
+      }
+
+      toast({
+        title: "Successfully created zkShield account!",
+      });
+      setOpen(false);
+
+    } catch (e) {
+      setErrorMessage(e as string);
     }
-  }, [supabase, formState]);
+  }, [supabase, formState, setErrorMessage, setOpen, toast]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="mb-6 rounded-md w-full">
           New Shield Account
@@ -94,9 +113,7 @@ export const NewShieldAccountDialog = () => {
         </DialogHeader>
         <div className="flex">
           <div className="flex flex-col w-full gap-4 my-6">
-            <Label htmlFor="name">
-              Name
-            </Label>
+            <Label htmlFor="name">Name</Label>
             <Input
               type="text"
               id="name"
@@ -107,6 +124,11 @@ export const NewShieldAccountDialog = () => {
             />
           </div>
         </div>
+        {errorMessage && (
+          <div className="text-red-500 text-sm">
+            {errorMessage + ". Please try again."}
+          </div>
+        )}
         <DialogFooter>
           <Button
             type="submit"
