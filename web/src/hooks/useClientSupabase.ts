@@ -15,7 +15,7 @@ export const useClientSupabase = <
   SchemaName extends string & keyof Database = "public" extends keyof Database
     ? "public"
     : string & keyof Database,
-  Schema extends GenericSchema = Database[SchemaName] extends GenericSchema
+    Schema extends GenericSchema = Database[SchemaName] extends GenericSchema
     ? Database[SchemaName]
     : any
 >(): SupabaseClient<Database, SchemaName, Schema> | null => {
@@ -45,7 +45,7 @@ export const useClientSupabase = <
       let token: string | null = null;
 
       try {
-        const token = JSON.parse(decodeURIComponent(session)).token;
+        token = JSON.parse(decodeURIComponent(session)).token;
         if (!token) {
           throw new Error("Missing token in session!");
         }
