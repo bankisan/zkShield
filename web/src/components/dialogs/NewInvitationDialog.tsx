@@ -61,14 +61,14 @@ export const NewInvitationDialog = () => {
       // Create Invitation
       const { data: invitation, error: invitationError } = await supabase
         .from("shield_account_invitations")
-        .insert([
+        .insert(
           {
             shield_account_id: Number(accountId),
             inviter_address: self.address,
             recipient_address: formState.getValues().address,
             status: "pending",
           },
-        ])
+        )
         .select()
         .single();
 
