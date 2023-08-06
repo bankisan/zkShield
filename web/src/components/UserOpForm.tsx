@@ -1,7 +1,7 @@
 import FormWrapper from "./FormWrapper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormItems } from "@/app/accounts/[accountAddress]/@legacy/page";
+import { FormItems } from "@/app/accounts/[accountId]/@legacy/page";
 
 type StepProps = FormItems & {
   updateForm: (fieldToUpdate: Partial<FormItems>) => void;

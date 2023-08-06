@@ -3,10 +3,10 @@
 import { useParams } from "next/navigation";
 
 export default function Page() {
-  const { accountAddress } = useParams();
+  const { accountId } = useParams();
   return (
     <div>
-      <h1>{accountAddress}</h1>
+      <h1>{accountId}</h1>
     </div>
   );
 }
