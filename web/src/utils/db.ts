@@ -13,14 +13,17 @@ export interface Database {
         Row: {
           address: string
           created_at: string
+          nullifier: string | null
         }
         Insert: {
           address: string
           created_at?: string
+          nullifier?: string | null
         }
         Update: {
           address?: string
           created_at?: string
+          nullifier?: string | null
         }
         Relationships: []
       }
@@ -28,16 +31,19 @@ export interface Database {
         Row: {
           address: string | null
           created_at: string
+          path: Json | null
           shield_account_id: number | null
         }
         Insert: {
           address?: string | null
           created_at?: string
+          path?: Json | null
           shield_account_id?: number | null
         }
         Update: {
           address?: string | null
           created_at?: string
+          path?: Json | null
           shield_account_id?: number | null
         }
         Relationships: [
@@ -84,12 +90,6 @@ export interface Database {
           {
             foreignKeyName: "shield_account_invitations_inviter_address_fkey"
             columns: ["inviter_address"]
-            referencedRelation: "addresses"
-            referencedColumns: ["address"]
-          },
-          {
-            foreignKeyName: "shield_account_invitations_recipient_address_fkey"
-            columns: ["recipient_address"]
             referencedRelation: "addresses"
             referencedColumns: ["address"]
           },
