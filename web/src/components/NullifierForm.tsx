@@ -1,5 +1,5 @@
 import FormWrapper from "./FormWrapper";
-import { FormItems } from "@/app/accounts/[accountAddress]/@legacy/page";
+import { FormItems } from "@/app/accounts/[accountId]/@legacy/page";
 import { nullifierMessage } from "common";
 
 type StepProps = FormItems;

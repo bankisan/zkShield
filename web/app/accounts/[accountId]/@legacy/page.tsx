@@ -68,7 +68,8 @@ export default function AccountAddressPage() {
   const [addresses, setAddresses] = useState<string[]>([]);
 
   const params = useParams();
-  const { accountAddress }: { accountAddress?: Hex } = params;
+  const { accountId }: { accountId?: Hex } = params;
+  const accountAddress = accountId;
 
   const { data: feeData } = useFeeData();
 
