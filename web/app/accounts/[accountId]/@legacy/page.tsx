@@ -118,7 +118,7 @@ export default function AccountAddressPage() {
       return
     }
     supabase.from("shield_accounts").select("address").eq("id", accountId).single().then(({ data }) => {
-      setAccountAddress(data?.address)
+      setAccountAddress(data?.address as Hex)
     })
 
   }, [accountAddress, supabase]);

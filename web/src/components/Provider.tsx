@@ -1,14 +1,16 @@
 'use client'
 
-import { ConnectKitProvider, SIWEConfig, SIWEProvider, getDefaultConfig } from 'connectkit'
+import { ConnectKitProvider, SIWEConfig, SIWEProvider, getDefaultConfig, useSIWE } from 'connectkit'
+import { ReactNode, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactNode } from 'react'
-import { WagmiConfig, createConfig, configureChains, mainnet } from 'wagmi'
-import { publicProvider } from 'wagmi/providers/public'
+import { WagmiConfig, configureChains, createConfig, mainnet, useAccount } from 'wagmi'
 import { foundry } from 'wagmi/chains'
+import { publicProvider } from 'wagmi/providers/public'
 
 import { WALLET_CONNECT_ID } from '@/config'
-import { NullifierContextProvider } from '@/hooks/useNullifier'
+import { useClientSupabase } from '@/hooks/useClientSupabase'
+import { NullifierContextProvider, useNullifierContext } from '@/hooks/useNullifier'
+import { Database } from '@/utils/db'
 import { SiweMessage } from 'siwe'
 
 const { publicClient, webSocketPublicClient } = configureChains(
@@ -64,13 +66,43 @@ const siweConfig = {
 } satisfies SIWEConfig
 
 
+
+const Middleware = ({ children }: { children: ReactNode }) => {
+  const supabase = useClientSupabase<Database>();
+  const { address } = useAccount()
+  const { isSignedIn, data: account } = useSIWE()
+  const { signNullifierMessage } = useNullifierContext();
+
+
+  useEffect(() => {
+    const f = async () => {
+      if (!address || !supabase || !isSignedIn) return
+      const data = await supabase?.from("addresses").select('nullifier').eq("address", account.address).single()
+      if (data?.data?.nullifier) {
+        // Nullfier exists, do nothing.
+        return
+      }
+
+      const { nullifier } = await signNullifierMessage();
+      await supabase?.from("addresses").upsert({ address: account.address, nullifier })
+    }
+    f()
+  }, [isSignedIn, address])
+  return <> {children} </>
+}
+
+
 export default function Provider({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiConfig config={config}>
         <SIWEProvider {...siweConfig}>
           <ConnectKitProvider>
-            <NullifierContextProvider>{children}</NullifierContextProvider>
+            <NullifierContextProvider>
+              <Middleware>
+                {children}
+              </Middleware>
+            </NullifierContextProvider>
           </ConnectKitProvider>
         </SIWEProvider>
       </WagmiConfig>
