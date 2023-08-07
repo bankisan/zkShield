@@ -31,7 +31,24 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const supabase = createServerComponentClient<Database>({ cookies });
-  const { data: accounts } = await supabase.from("shield_accounts").select("*");
+
+  const { data: self } = await supabase.from("addresses").select("*").single();
+
+  const { data: shieldAccountAddresses } = await supabase
+    .from("shield_account_addresses")
+    .select("shield_account_id");
+
+  const { data: accounts } = await supabase
+    .from("shield_accounts")
+    .select("*")
+    .in("id", shieldAccountAddresses?.map((a) => a.shield_account_id) || []);
+
+  const { data: invitations } = await supabase
+    .from("shield_account_invitations")
+    .select("*")
+    .eq("recipient_address", self?.address)
+    .eq("status", "pending");
+
   return (
     <html lang="en" className={`${ubuntu.variable} h-full w-full`}>
       <body className="flex flex-col items-stretch content-stretch h-full w-full dark">
@@ -49,7 +66,7 @@ export default async function RootLayout({
                 </div>
                 <div className="flex flex-col">
                   <p className="text-xs font-bold pb-4">INVITATIONS</p>
-                  <InvitationList />
+                  <InvitationList invitations={invitations} />
                 </div>
               </Card>
             </nav>
