@@ -29,22 +29,22 @@ export interface Database {
       }
       shield_account_addresses: {
         Row: {
-          address: string | null
+          address: string
           created_at: string
           path: Json | null
-          shield_account_id: number | null
+          shield_account_id: number
         }
         Insert: {
-          address?: string | null
+          address: string
           created_at?: string
           path?: Json | null
-          shield_account_id?: number | null
+          shield_account_id: number
         }
         Update: {
-          address?: string | null
+          address?: string
           created_at?: string
           path?: Json | null
-          shield_account_id?: number | null
+          shield_account_id?: number
         }
         Relationships: [
           {
@@ -64,25 +64,25 @@ export interface Database {
       shield_account_invitations: {
         Row: {
           created_at: string
-          inviter_address: string | null
-          recipient_address: string | null
-          shield_account_id: number | null
+          inviter_address: string
+          recipient_address: string
+          shield_account_id: number
           status: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
-          inviter_address?: string | null
-          recipient_address?: string | null
-          shield_account_id?: number | null
+          inviter_address: string
+          recipient_address: string
+          shield_account_id: number
           status?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
-          inviter_address?: string | null
-          recipient_address?: string | null
-          shield_account_id?: number | null
+          inviter_address?: string
+          recipient_address?: string
+          shield_account_id?: number
           status?: string | null
           updated_at?: string
         }
@@ -104,24 +104,24 @@ export interface Database {
       shield_account_user_op_signatures: {
         Row: {
           created_at: string
-          proof: string | null
-          shield_account_id: number | null
-          signer: string | null
-          user_op_id: number | null
+          proof: Json
+          shield_account_id: number
+          signer: string
+          user_op_id: number
         }
         Insert: {
           created_at?: string
-          proof?: string | null
-          shield_account_id?: number | null
-          signer?: string | null
-          user_op_id?: number | null
+          proof: Json
+          shield_account_id: number
+          signer: string
+          user_op_id: number
         }
         Update: {
           created_at?: string
-          proof?: string | null
-          shield_account_id?: number | null
-          signer?: string | null
-          user_op_id?: number | null
+          proof?: Json
+          shield_account_id?: number
+          signer?: string
+          user_op_id?: number
         }
         Relationships: [
           {
@@ -147,19 +147,19 @@ export interface Database {
       shield_account_user_ops: {
         Row: {
           created_at: string
-          data: string | null
+          data: Json
           id: number
           shield_account_id: number | null
         }
         Insert: {
           created_at?: string
-          data?: string | null
+          data: Json
           id?: number
           shield_account_id?: number | null
         }
         Update: {
           created_at?: string
-          data?: string | null
+          data?: Json
           id?: number
           shield_account_id?: number | null
         }
@@ -174,6 +174,7 @@ export interface Database {
       }
       shield_accounts: {
         Row: {
+          address: string | null
           created_at: string
           id: number
           name: string | null
@@ -181,6 +182,7 @@ export interface Database {
           updated_at: string
         }
         Insert: {
+          address?: string | null
           created_at?: string
           id?: number
           name?: string | null
@@ -188,6 +190,7 @@ export interface Database {
           updated_at?: string
         }
         Update: {
+          address?: string | null
           created_at?: string
           id?: number
           name?: string | null

@@ -11,14 +11,19 @@ import {
   useBalance,
   useFeeData,
   useChainId,
+  useAccount,
+  useWalletClient,
 } from "wagmi";
-import { Hex, hashMessage, hexToBytes, hexToNumber, isAddress } from "viem";
+import { Address, Hex, bytesToHex, createPublicClient, createWalletClient, getContract, hashMessage, hexToBytes, hexToNumber, http, isAddress, publicActions, stringToBytes } from "viem";
 import {
   UserOperation,
+  encodeSignature,
+  entryPointABI,
   executeTransactionData,
   getUserOpHash,
   shieldAccountABI,
   toBigInts,
+  toJsonStrings,
 } from "common";
 
 // XXX - This will be removed once we have a kv-store.
@@ -30,6 +35,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormState } from "@/hooks/useFormState";
 import { SendIcon } from "lucide-react";
+import { useClientSupabase } from "@/hooks/useClientSupabase";
+import { Database } from "@/utils/db";
+import { privateKeyToAccount } from "viem/accounts";
+import { foundry } from 'viem/chains'
+import { ENTRYPOINT_CONTRACT_ADDRESS } from "@/config";
 
 export type CallData = {
   target: `0x${string}`;
@@ -59,27 +69,66 @@ const initialUserOperation: UserOperation = {
   signature: `0x`,
 };
 
+// Using a local private key for development. Eventually, this will be replaced
+// with a bundler in testnet and mainnets.
+// Private key is safe to be publicly exposed as it is a test account from foundry.
+const account = privateKeyToAccount('0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6')
+
+// XXX:
+// Chain defaults to foundry for development purposes.
+const client = createWalletClient({
+  account,
+  chain: foundry,
+  transport: http()
+}).extend(publicActions)
+const pubClient = createPublicClient({
+  chain: foundry,
+  transport: http()
+})
+
+
+const entryPointContract = getContract({
+  address: ENTRYPOINT_CONTRACT_ADDRESS,
+  abi: entryPointABI,
+  walletClient: client,
+  publicClient: pubClient,
+})
+
 export default function AccountAddressPage() {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const [addresses, setAddresses] = useState<string[]>([]);
+  const supabase = useClientSupabase<Database>();
+
+  const { address: userAddress } = useAccount()
+  const [accountAddress, setAccountAddress] = useState<Address | undefined>()
 
   const params = useParams();
-  const { accountId }: { accountId?: Hex } = params;
-  const accountAddress = accountId;
+  const { accountId }: { accountId?: number } = params;
 
   const { data: feeData } = useFeeData();
 
   const { signNullifierMessage } = useNullifierContext();
+
+  useEffect(() => {
+
+    if (accountAddress || !supabase) {
+      return
+    }
+    supabase.from("shield_accounts").select("address").eq("id", accountId).single().then(({ data }) => {
+      setAccountAddress(data?.address)
+    })
+
+  }, [accountAddress, supabase]);
 
   const [isProving, setIsProving] = useState(false);
   const { data: accountNonce } = useContractRead({
     abi: shieldAccountABI,
     address: accountAddress,
     functionName: "nonce",
+    enabled: accountAddress !== undefined,
   });
 
   const { data: entryPointAddress } = useContractRead({
@@ -94,22 +143,41 @@ export default function AccountAddressPage() {
     functionName: "requiredSigners",
   });
 
+  const { refetch: getEthSignedMessageHash } = useContractRead({
+    abi: shieldAccountABI,
+    address: accountAddress,
+    functionName: "getEthSignedMessageHash",
+    enabled: false
+
+  });
+
+  const shieldAccount = getContract({
+    address: accountAddress!,
+    abi: shieldAccountABI,
+    publicClient: pubClient,
+  })
+
   const { data: balance } = useBalance({
     address: accountAddress,
   });
 
   const chainId = useChainId();
 
-  const { signMessageAsync } = useSignMessage();
+  const { data: walletClient } = useWalletClient()
 
   const handleProve = async () => {
+    if (!supabase) {
+      // TODO: Error here.
+      return;
+    }
+
     const { nullifier, secret } = await signNullifierMessage();
 
     // @ts-ignore
     const { pathIndices, siblings } = // @ts-ignore
-    ((accounts[accountAddress as any].signers as []) ?? [])
-      // @ts-ignore
-      .find((signer) => signer.nullifier === nullifier);
+      ((accounts[accountAddress as any].signers as []) ?? [])
+        // @ts-ignore
+        .find((signer) => signer.nullifier === nullifier);
     console.log(pathIndices);
     console.log(siblings);
 
@@ -126,6 +194,8 @@ export default function AccountAddressPage() {
       maxFeePerGas: feeData?.maxFeePerGas ?? 0n,
     };
 
+    console.log("What is this:", refinedUserOp);
+
     const userOpHash = getUserOpHash(
       refinedUserOp,
       entryPointAddress!,
@@ -133,10 +203,16 @@ export default function AccountAddressPage() {
     ) as Hex;
     // hexToBytes(userOpHash)
     // Test the next line before checking this.
-    const signedUserOp = await signMessageAsync({
-      message: userOpHash,
-    });
-    const messageHash = hexToBytes(hashMessage(userOpHash));
+    // const signedUserOp = await signMessageAsync({
+    //   message: userOpHash,
+    // });
+    const signedUserOp = await walletClient?.signMessage({
+      message: { raw: hexToBytes(userOpHash) }
+    })
+    if (!signedUserOp) {
+      return
+    }
+    const messageHash = hexToBytes(hashMessage({ raw: hexToBytes(userOpHash) }));
 
     const v = hexToNumber(`0x${signedUserOp.slice(130)}`);
     const sig = secp256k1.Signature.fromCompact(
@@ -175,7 +251,34 @@ export default function AccountAddressPage() {
       nullifier: BigInt(publicSignals[1]),
     };
 
-    // TODO: Submit to backend pending signatures.
+    console.log('Compare hashes')
+    const expectedUserOp = await entryPointContract?.read.getUserOpHash([refinedUserOp])
+    console.log(await shieldAccount.read.getEthSignedMessageHash([expectedUserOp]))
+    console.log(bytesToHex(messageHash))
+
+    // const userOpWithSignature = {
+    //   ...refinedUserOp,
+    //   signature: encodeSignature([signatureProof]),
+    // }
+    // await entryPointContract.write.handleOps([[userOpWithSignature], accountAddress!], {})
+    // return
+
+    const { data } = await supabase.from("shield_account_user_ops").insert([{
+      shield_account_id: Number(accountId),
+      data: JSON.parse(toJsonStrings(refinedUserOp))
+    }]).select().limit(1).single()
+
+    await supabase?.from("shield_account_user_op_signatures").insert({
+      user_op_id: data?.id!,
+      signer: userAddress!,
+      proof: JSON.parse(toJsonStrings(signatureProof))
+    })
+
+    fetch(`/api/accounts/${accountId}/send`, {
+      method: 'POST',
+      body: JSON.stringify({ userOpId: data?.id }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => console.log(res.ok))
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

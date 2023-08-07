@@ -54,7 +54,7 @@
     "tailwindcss": "3.3.1",
     "tailwindcss-animate": "^1.0.6",
     "typescript": "5.0.3",
-    "viem": "^0.3.37",
+    "viem": "^1.5.0",
     "wagmi": "^1.0.8"
   },
   "devDependencies": {

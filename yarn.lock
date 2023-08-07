@@ -2773,6 +2773,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ws@npm:^8.5.4":
+  version: 8.5.5
+  resolution: "@types/ws@npm:8.5.5"
+  dependencies:
+    "@types/node": "*"
+  checksum: d00bf8070e6938e3ccf933010921c6ce78ac3606696ce37a393b27a9a603f7bd93ea64f3c5fa295a2f743575ba9c9a9fdb904af0f5fe2229bf2adf0630386e4a
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/parser@npm:^5.42.0":
   version: 5.58.0
   resolution: "@typescript-eslint/parser@npm:5.58.0"
@@ -2912,6 +2921,18 @@ __metadata:
     typescript:
       optional: true
   checksum: 1669bd7fa618226656510179ef7d938af65b737728b3fab30f2b2d2a09c6da399672af7964309e3c14e54faf10c50264915c3fc327e67e54f4dab5f0f4abd1d3
+  languageName: node
+  linkType: hard
+
+"@wagmi/chains@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@wagmi/chains@npm:1.6.0"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 6c3d477936622f763b9e44c4a66c080020f1119165c8f6b840c51f5822880fedd5031036461d4b28df5cf1ae19cb12e139e4a4b3c129b475f0363fd9c4c8bb0d
   languageName: node
   linkType: hard
 
@@ -3510,6 +3531,21 @@ __metadata:
     zod:
       optional: true
   checksum: ec9ade7e2b54f6d22b5dc1688b7fa71958361f595b94bbde0a3fa5e53742400e587bb99ba6df7d041ebc229c766df4263d9a15fe523941112fe111b07848a05d
+  languageName: node
+  linkType: hard
+
+"abitype@npm:0.9.3":
+  version: 0.9.3
+  resolution: "abitype@npm:0.9.3"
+  peerDependencies:
+    typescript: ">=5.0.4"
+    zod: ^3 >=3.19.1
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    zod:
+      optional: true
+  checksum: f97c5a118180563b9ed8b97da492a82d3ce53dcd7d96c87764e90dbe84c04ae72dd5703d1ed5a54601033ab1772b8a235a1b5aadaf7aad6c4b5fdad7fd3a69a7
   languageName: node
   linkType: hard
 
@@ -10796,20 +10832,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^0.3.37":
-  version: 0.3.37
-  resolution: "viem@npm:0.3.37"
+"viem@npm:^1.5.0":
+  version: 1.5.3
+  resolution: "viem@npm:1.5.3"
   dependencies:
     "@adraffy/ens-normalize": 1.9.0
     "@noble/curves": 1.0.0
     "@noble/hashes": 1.3.0
     "@scure/bip32": 1.3.0
     "@scure/bip39": 1.2.0
-    "@wagmi/chains": 0.3.1
-    abitype: 0.8.2
+    "@types/ws": ^8.5.4
+    "@wagmi/chains": 1.6.0
+    abitype: 0.9.3
     isomorphic-ws: 5.0.0
     ws: 8.12.0
-  checksum: 2972763025a5b4d4ce9ff7745dabd5448f4eddf34d3fa0e65912cbf8b348c743e18e19d0a056dd2556ea47c43d6ed6070e11f1ee12d3c5be2a0b673917fce48c
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: da1e732e1f874251bb9f042dc164f4e53262b3db70c7bba8155c54de7c8a38258bd6e9c2eee8d26896301b27e3e1f14ad05869e20adff95c292a6f3c71625e98
   languageName: node
   linkType: hard
 
@@ -10934,7 +10976,7 @@ __metadata:
     tailwindcss: 3.3.1
     tailwindcss-animate: ^1.0.6
     typescript: 5.0.3
-    viem: ^0.3.37
+    viem: ^1.5.0
     wagmi: ^1.0.8
   languageName: unknown
   linkType: soft
