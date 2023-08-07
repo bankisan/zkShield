@@ -53,12 +53,12 @@ export default async function RootLayout({
     <html lang="en" className={`${ubuntu.variable} h-full w-full`}>
       <body className="flex flex-col items-stretch content-stretch h-full w-full dark">
         <Provider>
-          <header className="flex w-full justify-end px-4 pt-3">
+          <header className="flex w-full justify-end px-4 pt-3 min-h-[55px]">
             <WalletConnectButton />
           </header>
-          <div className="flex flex-row h-full gap-4 p-4">
-            <nav className="flex flex-col h-full">
-              <Card className="h-full p-6">
+          <div className="flex flex-row gap-4 p-4">
+            <nav className="flex flex-col">
+              <Card className="p-6 overflow-scroll">
                 <NewShieldAccountDialog />
                 <div className="flex flex-col mb-4">
                   <p className="text-xs font-bold pb-4">SHIELD ACCOUNTS</p>
