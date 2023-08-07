@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useClientSupabase } from "@/hooks/useClientSupabase";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,12 +15,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Database } from "@/utils/db";
-import { Hex, hashMessage, hexToBytes, hexToNumber, isAddress } from "viem";
+import { Hex, isAddress } from "viem";
 import { useFormState } from "@/hooks/useFormState";
 import { useToast } from "@/components/ui/use-toast";
 import { useParams } from "next/navigation";
-import { UserOperation, shieldAccountABI, executeTransactionData } from "common";
-import { useContractRead, useFeeData } from "wagmi";
+import {
+  UserOperation,
+  shieldAccountABI,
+  executeTransactionData,
+} from "common";
+import { useFeeData } from "wagmi";
 import { readContract } from "@wagmi/core";
 
 const initialUserOperation: UserOperation = {
@@ -76,35 +80,9 @@ export const NewTransferDialog = () => {
     }
   );
 
-  // Account State
+  // General State
   const { accountId } = useParams();
-  const [accountAddress, setAccountAddress] = useState<string | null>(null);
   const { data: feeData } = useFeeData();
-
-  // Fetch account address on load
-  useEffect(() => {
-    if (!accountId || !supabase) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const { data: account, error } = await supabase
-          .from("shield_accounts")
-          .select()
-          .eq("id", accountId)
-          .single();
-        if (!account || error) {
-          throw (
-            "Error retrieving account address. " + (error ? error.message : "")
-          );
-        }
-        setAccountAddress(account.address);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
-  }, [supabase, accountId]);
 
   const submit = useCallback(async () => {
     setErrorMessage(null);
@@ -112,10 +90,6 @@ export const NewTransferDialog = () => {
     try {
       if (!supabase) {
         throw "Error intializing Supabase client.";
-      }
-
-      if (!accountAddress) {
-        throw "Error retrieving zkShield account address.";
       }
 
       // Retrieve user address
@@ -130,14 +104,27 @@ export const NewTransferDialog = () => {
         );
       }
 
+      // Retrieve account address
+      const { data: account, error } = await supabase
+        .from("shield_accounts")
+        .select()
+        .eq("id", accountId)
+        .single();
+      if (!account || error || !account.address) {
+        throw (
+          "Error retrieving account address. " + (error ? error.message : "")
+        );
+      }
+
       // Retrieve nonce
       const accountNonce = await readContract({
-        address: accountAddress as Hex,
+        address: account?.address as Hex,
         abi: shieldAccountABI,
         functionName: "nonce",
       });
 
-      const userOp = {
+      // Prepare user op
+      const userOpData = {
         ...initialUserOperation,
         sender: self.address as Hex,
         nonce: accountNonce ?? 0n,
@@ -151,16 +138,16 @@ export const NewTransferDialog = () => {
       };
 
       // Create zkShield account user op
-      const { data: shieldAccount, error: shieldAccountError } = await supabase
+      const { data: userOp, error: userOpError } = await supabase
         .from("shield_accounts_user_ops")
-        .insert([{ shield_account_id: accountId, data: userOp }])
+        .insert([{ shield_account_id: accountId, data: userOpData }])
         .select()
         .single();
 
-      if (!shieldAccount || shieldAccountError) {
+      if (!userOp || userOpError) {
         throw (
-          "Error creating zkShield account. " +
-          (shieldAccountError ? shieldAccountError.message : "")
+          "Error creating zkShield user op. " +
+          (userOpError ? userOpError.message : "")
         );
       }
 
@@ -178,7 +165,6 @@ export const NewTransferDialog = () => {
     setOpen,
     toast,
     accountId,
-    accountAddress,
     feeData,
   ]);
 
