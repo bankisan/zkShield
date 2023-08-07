@@ -75,7 +75,7 @@ export const AcceptInvitationDialog = ({
       const { data: association, error: associationError } = await supabase
         .from("shield_account_addresses")
         .insert({
-          shield_account_id: Number(invitation?.shield_account_id),
+          shield_account_id: invitation?.shield_account_id,
           address: self.address,
         })
         .select()

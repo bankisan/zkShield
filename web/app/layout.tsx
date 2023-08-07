@@ -31,20 +31,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const supabase = createServerComponentClient<Database>({ cookies });
-  
-  const { data: self } = await supabase
-    .from("addresses")
-    .select("*")
-    .single();
-    
+
+  const { data: self } = await supabase.from("addresses").select("*").single();
+
   const { data: shieldAccountAddresses } = await supabase
     .from("shield_account_addresses")
     .select("shield_account_id");
 
   const { data: accounts } = await supabase
-  .from("shield_accounts")
-  .select("*")
-  .in("id", shieldAccountAddresses?.map((a) => a.shield_account_id) || []);
+    .from("shield_accounts")
+    .select("*")
+    .in("id", shieldAccountAddresses?.map((a) => a.shield_account_id) || []);
 
   const { data: invitations } = await supabase
     .from("shield_account_invitations")
