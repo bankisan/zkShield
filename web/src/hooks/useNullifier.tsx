@@ -7,8 +7,6 @@ import { Hex, hashMessage, hexToNumber, keccak256 } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 
 type INullifierContext = {
-  nullifier?: Hex
-  connectNullifier: () => Promise<void>
   signNullifierMessage: () => Promise<{ secret: bigint; nullifier: Hex }>
 }
 const NullifierContext = createContext<INullifierContext>(
@@ -20,14 +18,13 @@ export const NullifierContextProvider = ({
 }: {
   children: ReactNode
 }) => {
-  const [nullifier, setNullifier] = useState<Hex>()
-  const { signMessageAsync: signNullifierAsync } = useSignMessage({
+  const { signMessageAsync } = useSignMessage({
     message: nullifierMessage,
   })
 
   const signNullifierMessage = async () => {
     const nullifierMessageHashed = hashMessage(nullifierMessage!)
-    const signature = await signNullifierAsync()
+    const signature = await signMessageAsync()
     const v = hexToNumber(`0x${signature.slice(130)}`)
     const pub = secp256k1.Signature.fromCompact(signature.substring(2, 130))
       .addRecoveryBit(v - 27)
@@ -48,26 +45,9 @@ export const NullifierContextProvider = ({
     return { secret, nullifier: nullifierHex }
   }
 
-  const connectNullifier = async () => {
-    if (nullifier) {
-      // TODO: Fix when switching accounts.
-      return
-    }
-    // XXX - Disabling until saving in local storage.
-    return
-    const { nullifier: nullifierHex } = await signNullifierMessage()
-    setNullifier(nullifierHex)
-  }
-
-  useAccount({
-    onConnect: connectNullifier,
-    onDisconnect: () => setNullifier(undefined),
-  })
-  // TODO: Add a way to connect nullifier and display status of it.
-
   return (
     <NullifierContext.Provider
-      value={{ nullifier, connectNullifier, signNullifierMessage }}
+      value={{ signNullifierMessage }}
     >
       {children}
     </NullifierContext.Provider>
