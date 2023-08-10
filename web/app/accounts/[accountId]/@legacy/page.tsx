@@ -171,13 +171,11 @@ export default function AccountAddressPage() {
       return;
     }
 
-    const { nullifier, secret } = await signNullifierMessage();
+    const { secret } = await signNullifierMessage();
 
+    const { data: addressData } = await supabase.from("shield_account_addresses").select("path").eq("address", userAddress).eq("shield_account_id", accountId).single()
     // @ts-ignore
-    const { pathIndices, siblings } = // @ts-ignore
-      ((accounts[accountAddress as any].signers as []) ?? [])
-        // @ts-ignore
-        .find((signer) => signer.nullifier === nullifier);
+    const { pathIndices, siblings } = addressData.path // @ts-ignore
     console.log(pathIndices);
     console.log(siblings);
 
