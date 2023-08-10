@@ -70,21 +70,24 @@ const siweConfig = {
 const Middleware = ({ children }: { children: ReactNode }) => {
   const supabase = useClientSupabase<Database>();
   const { address } = useAccount()
-  const { isSignedIn, data: account } = useSIWE()
+  const { isSignedIn } = useSIWE()
   const { signNullifierMessage } = useNullifierContext();
 
 
   useEffect(() => {
     const f = async () => {
       if (!address || !supabase || !isSignedIn) return
-      const data = await supabase?.from("addresses").select('nullifier').eq("address", account.address).single()
+      const data = await supabase?.from("addresses").select('nullifier').eq("address", address).single()
       if (data?.data?.nullifier) {
         // Nullfier exists, do nothing.
         return
       }
 
       const { nullifier } = await signNullifierMessage();
-      await supabase?.from("addresses").upsert({ address: account.address, nullifier })
+      const { error } = await supabase?.from("addresses").update({ nullifier }).eq("address", address)
+      if (error) {
+        console.error(error)
+      }
     }
     f()
   }, [isSignedIn, address])
