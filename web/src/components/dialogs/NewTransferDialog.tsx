@@ -23,6 +23,7 @@ import {
   UserOperation,
   shieldAccountABI,
   executeTransactionData,
+  toJsonStrings,
 } from "common";
 import { useFeeData } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -117,11 +118,17 @@ export const NewTransferDialog = () => {
       }
 
       // Retrieve nonce
-      const accountNonce = await readContract({
-        address: account?.address as Hex,
-        abi: shieldAccountABI,
-        functionName: "nonce",
-      });
+      let accountNonce: bigint = 0n;
+      try {
+        accountNonce = await readContract({
+          address: account?.address as Hex,
+          abi: shieldAccountABI,
+          functionName: "nonce",
+        });
+      } catch (e) {
+        console.log("Failed to retrieve nonce, using nonce = 0n");
+        accountNonce = 0n;
+      }
 
       // Prepare user op
       const userOpData = {
@@ -139,8 +146,11 @@ export const NewTransferDialog = () => {
 
       // Create zkShield account user op
       const { data: userOp, error: userOpError } = await supabase
-        .from("shield_accounts_user_ops")
-        .insert([{ shield_account_id: accountId, data: userOpData }])
+        .from("shield_account_user_ops")
+        .insert({
+          shield_account_id: Number(accountId),
+          data: JSON.parse(toJsonStrings(userOpData)),
+        })
         .select()
         .single();
 
