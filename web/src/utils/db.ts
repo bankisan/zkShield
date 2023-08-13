@@ -105,31 +105,22 @@ export interface Database {
         Row: {
           created_at: string
           proof: Json
-          shield_account_id: number
           signer: string
           user_op_id: number
         }
         Insert: {
           created_at?: string
           proof: Json
-          shield_account_id: number
           signer: string
           user_op_id: number
         }
         Update: {
           created_at?: string
           proof?: Json
-          shield_account_id?: number
           signer?: string
           user_op_id?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "shield_account_user_op_signatures_shield_account_id_fkey"
-            columns: ["shield_account_id"]
-            referencedRelation: "shield_accounts"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "shield_account_user_op_signatures_signer_fkey"
             columns: ["signer"]

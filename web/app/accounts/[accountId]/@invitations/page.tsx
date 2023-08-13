@@ -1,56 +1,24 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { NewInvitationDialog } from "@/components/dialogs/NewInvitationDialog";
-import { useClientSupabase } from "@/hooks/useClientSupabase";
+import { cookies } from "next/headers";
 import { Database } from "@/utils/db";
-import { useEffect, useState } from "react";
-import type { Invitation as InvitationType } from "@/types";
+import { createServerComponentClient } from "@/utils/createServerComponentClient";
+import { NewInvitationDialog } from "@/components/dialogs/NewInvitationDialog";
+import AccountInvitationList from "@/components/AccountInvitationList";
 
-const Invitation = (props: InvitationType) => {
-  return (
-    <Card className="w-full mb-4">
-      <CardHeader>Invitation to {props.recipient_address}</CardHeader>
-      <CardContent>
-        <div>Invitation Sent to {props.recipient_address}</div>
-      </CardContent>
-      <CardFooter>
-        <Button variant="outline" className="rounded-md px-6 mr-2">
-          Rescind
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-};
-
-export default function Page() {
-  const supabase = useClientSupabase<Database>();
-  const [invitations, setInvitations] = useState<InvitationType[]>([]);
-
-  useEffect(() => {
-    supabase &&
-      (async () => {
-        const { data: invitations, error } = await supabase!
-          .from("shield_accounts_invitations")
-          .select("*");
-        if (!error) setInvitations(invitations);
-      })();
-  }, [supabase]);
-
+export default async function Page({
+  params: { accountId },
+}: {
+  params: { accountId: string };
+}) {
+  const supabase = createServerComponentClient<Database>({ cookies });
+  const { data: invitations, error } = await supabase!
+    .from("shield_account_invitations")
+    .select("*")
+    .eq("shield_account_id", accountId);
+    console.log(error);
   return (
     <div>
       <NewInvitationDialog />
-      <div>
-        {invitations?.map((invitation, i) => (
-          <Invitation key={i} {...invitation} />
-        ))}
-      </div>
+      <AccountInvitationList invitations={invitations} />
     </div>
   );
 }

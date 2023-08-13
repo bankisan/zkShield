@@ -16,6 +16,12 @@ module.exports = {
       },
     },
     extend: {
+      gridTemplateColumns: {
+        "body": "25% 1fr"
+      },
+      gridTemplateRows: {
+        "body": "auto 1fr"
+      },
       colors: {
         brand: {
           DEFAULT: "var(--brand)",

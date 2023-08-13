@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +7,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { useClientSupabase } from "@/hooks/useClientSupabase";
 import { Database } from "@/utils/db";
 import { useParams } from "next/navigation";
@@ -14,27 +15,35 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
   const supabase = useClientSupabase<Database>();
-  const { accountId } = useParams()
+  const { toast } = useToast();
+  const { accountId } = useParams();
   const [isDeployed, setIsDeployed] = useState(true);
   useEffect(() => {
     supabase &&
       (async () => {
         const { data: account, error } = await supabase!
           .from("shield_accounts")
-          .select("*").eq("id", accountId).single();
-        if (!error) setIsDeployed(account.address != null)
+          .select("*")
+          .eq("id", accountId)
+          .single();
+        if (!error) setIsDeployed(account.address != null);
       })();
-  }, [supabase, accountId])
+  }, [supabase, accountId]);
 
   const [isDeploying, setIsDeploying] = useState(false);
   const deployAccount = () => {
-    setIsDeploying(true)
+    setIsDeploying(true);
     fetch(`/api/accounts/${accountId}/deploy`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({}),
-      headers: { 'Content-Type': 'application/json' },
-    }).then(() => setIsDeployed(true)).finally(() => setIsDeploying(false))
-  }
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(() => {
+        setIsDeployed(true);
+        toast({ title: "Successfully deployed zkShield account!" });
+      })
+      .finally(() => setIsDeploying(false));
+  };
 
   return (
     <Card className="w-full h-full mt-6">
@@ -43,7 +52,16 @@ export default function Page() {
         <div>Invitation Sent to 0x0</div>
       </CardContent>
       <CardFooter></CardFooter>
-      {!isDeployed && <Button variant="outline" disabled={isDeploying} className="rounded-md px-6 mr-2" onClick={() => deployAccount()}>Deploy</Button>}
+      {!isDeployed && (
+        <Button
+          variant="outline"
+          disabled={isDeploying}
+          className="rounded-md px-6 mr-2"
+          onClick={() => deployAccount()}
+        >
+          Deploy
+        </Button>
+      )}
     </Card>
   );
 }

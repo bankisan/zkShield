@@ -40,7 +40,7 @@ export default async function RootLayout({
 
   const { data: accounts } = await supabase
     .from("shield_accounts")
-    .select("*")
+    .select("*, shield_account_addresses(count), shield_account_user_ops(count)")
     .in("id", shieldAccountAddresses?.map((a) => a.shield_account_id) || []);
 
   const { data: invitations } = await supabase
@@ -50,30 +50,35 @@ export default async function RootLayout({
     .eq("status", "pending");
 
   return (
-    <html lang="en" className={`${ubuntu.variable} h-full w-full`}>
-      <body className="flex flex-col items-stretch content-stretch h-full w-full dark">
+    <html
+      lang="en"
+      className={`${ubuntu.variable} h-full w-full overflow-hidden`}
+    >
+      <body className="dark h-full w-full overflow-hidden">
+        <Toaster />
         <Provider>
-          <header className="flex w-full justify-end px-4 pt-3 min-h-[55px]">
-            <WalletConnectButton />
-          </header>
-          <div className="flex flex-row gap-4 p-4">
-            <nav className="flex flex-col">
-              <Card className="p-6 overflow-scroll">
-                <NewShieldAccountDialog />
-                <div className="flex flex-col mb-4">
-                  <p className="text-xs font-bold pb-4">SHIELD ACCOUNTS</p>
-                  <AccountList accounts={accounts} />
-                </div>
-                <div className="flex flex-col">
+          <div className="grid grid-cols-body grid-rows-body gap-4 h-full overflow-hidden p-2">
+            <header className="row-start-1 px-4 py-4">
+              <WalletConnectButton />
+            </header>
+            <nav className="row-start-2 rounded-lg bg-card border overflow-auto p-6">
+              <NewShieldAccountDialog />
+              <div className="flex flex-col">
                   <p className="text-xs font-bold pb-4">INVITATIONS</p>
                   <InvitationList invitations={invitations} />
                 </div>
-              </Card>
+              <div className="mb-4">
+                <p className="text-xs font-bold pb-4">SHIELD ACCOUNTS</p>
+                {/* We need to upgrade Supabase to support counts of joins. */}
+                {/* @ts-ignore */}
+                <AccountList accounts={accounts} />
+              </div>
             </nav>
-            <main className="flex w-full h-full">{children}</main>
+            <main className="row-start-2 row-end-auto overflow-auto">
+              {children}
+            </main>
           </div>
         </Provider>
-        <Toaster />
       </body>
     </html>
   );
