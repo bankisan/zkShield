@@ -133,7 +133,7 @@ export const NewTransferDialog = () => {
       // Prepare user op
       const userOpData = {
         ...initialUserOperation,
-        sender: self.address as Hex,
+        sender: account?.address as Hex,
         nonce: accountNonce ?? 0n,
         callData: executeTransactionData({
           target: formState.state.fields.to.value as Hex,

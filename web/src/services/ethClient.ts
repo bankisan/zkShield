@@ -2,7 +2,7 @@ import { Address, Hex, createPublicClient, createWalletClient, encodeFunctionDat
 import { privateKeyToAccount } from 'viem/accounts'
 import { foundry } from 'viem/chains'
 
-import { SignatureProof, UserOperation, encodeSignature, entryPointABI, erc1967FactoryABI, shieldAccountABI, toBigInts } from 'common'
+import { SignatureProof, UserOperation, encodeSignature, entryPointABI, erc1967FactoryABI, shieldAccountABI } from 'common'
 
 import { ENTRYPOINT_CONTRACT_ADDRESS, FACTORY_CONTRACT_ADDRESS, SHIELD_ACCOUNT_IMPLEMENTATION_ADDRESS } from '@/config'
 

@@ -6,7 +6,6 @@ import "./globals.css";
 import Provider from "@/components/Provider";
 import WalletConnectButton from "@/components/WalletConnectButton";
 import AccountList from "@/components/AccountList";
-import { Card } from "@/components/ui/card";
 import { NewShieldAccountDialog } from "@/components/dialogs/NewShieldAccountDialog";
 import InvitationList from "@/components/InvitationList";
 import { createServerComponentClient } from "@/utils/createServerComponentClient";
@@ -40,7 +39,9 @@ export default async function RootLayout({
 
   const { data: accounts } = await supabase
     .from("shield_accounts")
-    .select("*, shield_account_addresses(count), shield_account_user_ops(count)")
+    .select(
+      "*, shield_account_addresses(count), shield_account_user_ops(count)"
+    )
     .in("id", shieldAccountAddresses?.map((a) => a.shield_account_id) || []);
 
   const { data: invitations } = await supabase
@@ -64,9 +65,9 @@ export default async function RootLayout({
             <nav className="row-start-2 rounded-lg bg-card border overflow-auto p-6">
               <NewShieldAccountDialog />
               <div className="flex flex-col">
-                  <p className="text-xs font-bold pb-4">INVITATIONS</p>
-                  <InvitationList invitations={invitations} />
-                </div>
+                <p className="text-xs font-bold pb-4">INVITATIONS</p>
+                <InvitationList invitations={invitations} />
+              </div>
               <div className="mb-4">
                 <p className="text-xs font-bold pb-4">SHIELD ACCOUNTS</p>
                 {/* We need to upgrade Supabase to support counts of joins. */}

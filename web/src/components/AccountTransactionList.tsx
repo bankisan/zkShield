@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,9 +8,15 @@ import { ShieldAccountUserOp } from "@/types";
 import { shieldAccountABI } from "common";
 import { decodeFunctionData } from "viem";
 import { SignDialog } from "./dialogs/SignDialog";
+import { SubmitDialog } from "./dialogs/SubmitDialog";
 
-const UserOp = (userOp: ShieldAccountUserOp) => {
-  const callData = (userOp.data as { [key: string]: any })["callData"];
+const UserOp = (
+  props: ShieldAccountUserOp & {
+    accountThreshold: number;
+    signatureCount: number;
+  }
+) => {
+  const callData = (props.data as { [key: string]: any })["callData"];
 
   const functionData = decodeFunctionData({
     abi: shieldAccountABI,
@@ -32,33 +37,56 @@ const UserOp = (userOp: ShieldAccountUserOp) => {
 
   return (
     <Card className="w-full mb-4">
-      <CardHeader>Transaction {userOp.id}</CardHeader>
+      <CardHeader>Transaction {props.id}</CardHeader>
       <CardContent>
         <div>Data</div>
         {to && <div>To: {to}</div>}
         {value != null && <div>Value: {String(value)}</div>}
       </CardContent>
       <CardFooter>
-        <SignDialog userOp={userOp} />
-        <Button variant="outline" className="rounded-md px-6 mr-2" disabled>
-          Submit
-        </Button>
+        <SignDialog userOp={props} />
+        <SubmitDialog
+          userOp={props}
+          enabled={
+            props.accountThreshold != 0 &&
+            props.signatureCount >= props.accountThreshold
+          }
+        />
       </CardFooter>
     </Card>
   );
 };
 
 export default function AccountTransactionList({
+  accountThreshold,
   userOps,
 }: {
-  userOps: ShieldAccountUserOp[] | null
+  accountThreshold: number;
+  userOps:
+    | (ShieldAccountUserOp & {
+        shield_account_user_op_signatures: [
+          {
+            count: number;
+          }
+        ];
+      })[]
+    | null;
 }) {
   return (
     <div>
       <div className="flex gap-2 overflow-hidden">
         <ul>
           {userOps?.map((userOp, i) => (
-            <UserOp key={i} {...userOp} />
+            <UserOp
+              key={i}
+              {...userOp}
+              accountThreshold={accountThreshold}
+              signatureCount={
+                userOp.shield_account_user_op_signatures
+                  ? userOp.shield_account_user_op_signatures[0].count
+                  : 0
+              }
+            />
           ))}
         </ul>
       </div>

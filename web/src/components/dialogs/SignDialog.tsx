@@ -30,7 +30,6 @@ import { generateInputs } from "@/utils/generateInputs";
 import { secp256k1 } from "@noble/curves/secp256k1";
 import { generateCommitProof } from "@/services/snark";
 import { useNullifierContext } from "@/hooks/useNullifier";
-import { sign } from "crypto";
 
 const createSignatureProof = async (
   messageHash: Uint8Array,
@@ -79,7 +78,6 @@ const createSignatureProof = async (
 export const SignDialog = ({ userOp }: { userOp: ShieldAccountUserOp }) => {
   const supabase = useClientSupabase<Database>();
   const { toast } = useToast();
-  const { accountId } = useParams();
 
   // Crypto Hooks
   const { data: walletClient } = useWalletClient();
