@@ -17,10 +17,11 @@ import { Database } from "@/utils/db";
 import { useCallback, useState } from "react";
 import { useFormState } from "@/hooks/useFormState";
 import { useToast } from "@/components/ui/use-toast";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export const NewInvitationDialog = () => {
   const supabase = useClientSupabase<Database>();
+  const router = useRouter();
   const { accountId } = useParams();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -61,14 +62,12 @@ export const NewInvitationDialog = () => {
       // Create Invitation
       const { data: invitation, error: invitationError } = await supabase
         .from("shield_account_invitations")
-        .insert(
-          {
-            shield_account_id: Number(accountId),
-            inviter_address: self.address,
-            recipient_address: formState.getValues().address,
-            status: "pending",
-          },
-        )
+        .insert({
+          shield_account_id: Number(accountId),
+          inviter_address: self.address,
+          recipient_address: formState.getValues().address,
+          status: "pending",
+        })
         .select()
         .single();
 
@@ -83,10 +82,11 @@ export const NewInvitationDialog = () => {
         title: "Invitation successfully sent!",
       });
       setOpen(false);
+      router.refresh();
     } catch (e) {
       setErrorMessage(e as string);
     }
-  }, [supabase, formState, setErrorMessage, setOpen, toast, accountId]);
+  }, [supabase, formState, setErrorMessage, setOpen, toast, accountId, router]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

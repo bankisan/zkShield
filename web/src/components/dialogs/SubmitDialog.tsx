@@ -30,7 +30,10 @@ export const SubmitDialog = ({
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const submit = useCallback(async () => {
+    setIsSubmitting(true)
     setErrorMessage(null);
     try {
       if (!supabase) {
@@ -78,7 +81,9 @@ export const SubmitDialog = ({
           </div>
         )}
         <DialogFooter>
-          <Button onClick={submit} disabled={!enabled}>Submit</Button>
+          <Button onClick={() => submit().finally(() => setIsSubmitting(false))} disabled={!enabled || isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

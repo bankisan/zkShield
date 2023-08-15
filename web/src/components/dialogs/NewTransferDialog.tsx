@@ -18,7 +18,7 @@ import { Database } from "@/utils/db";
 import { Hex, isAddress } from "viem";
 import { useFormState } from "@/hooks/useFormState";
 import { useToast } from "@/components/ui/use-toast";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   UserOperation,
   shieldAccountABI,
@@ -44,6 +44,7 @@ const initialUserOperation: UserOperation = {
 
 export const NewTransferDialog = () => {
   const supabase = useClientSupabase<Database>();
+  const router = useRouter();
   const { toast } = useToast();
 
   // Dialog State
@@ -165,6 +166,7 @@ export const NewTransferDialog = () => {
         title: "Successfully submitted transfer!",
       });
       setOpen(false);
+      router.refresh();
     } catch (e) {
       setErrorMessage(e as string);
     }
@@ -176,6 +178,7 @@ export const NewTransferDialog = () => {
     toast,
     accountId,
     feeData,
+    router
   ]);
 
   return (

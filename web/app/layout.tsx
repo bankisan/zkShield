@@ -64,10 +64,12 @@ export default async function RootLayout({
             </header>
             <nav className="row-start-2 rounded-lg bg-card border overflow-auto p-6">
               <NewShieldAccountDialog />
-              <div className="flex flex-col">
-                <p className="text-xs font-bold pb-4">INVITATIONS</p>
-                <InvitationList invitations={invitations} />
-              </div>
+              {(invitations && invitations.length > 0) && (
+                <div className="flex flex-col">
+                  <p className="text-xs font-bold pb-4">INVITATIONS</p>
+                  <InvitationList invitations={invitations} />
+                </div>
+              )}
               <div className="mb-4">
                 <p className="text-xs font-bold pb-4">SHIELD ACCOUNTS</p>
                 {/* We need to upgrade Supabase to support counts of joins. */}
@@ -75,7 +77,7 @@ export default async function RootLayout({
                 <AccountList accounts={accounts} />
               </div>
             </nav>
-            <main className="row-start-2 row-end-auto overflow-auto">
+            <main className="row-start-2 row-end-auto overflow-auto h-full">
               {children}
             </main>
           </div>

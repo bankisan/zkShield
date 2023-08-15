@@ -17,9 +17,11 @@ import { Database } from "@/utils/db";
 import { useCallback, useState } from "react";
 import { useFormState } from "@/hooks/useFormState";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export const NewShieldAccountDialog = () => {
   const supabase = useClientSupabase<Database>();
+  const router = useRouter();
   const { toast } = useToast()
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -91,6 +93,8 @@ export const NewShieldAccountDialog = () => {
         title: "Successfully created zkShield account!",
       });
       setOpen(false);
+
+      router.refresh();
 
     } catch (e) {
       setErrorMessage(e as string);

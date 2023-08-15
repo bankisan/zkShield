@@ -46,7 +46,7 @@ export default async function Page({
     <div>
       <div className="flex flex-row gap-2">
         <NewTransferDialog />
-        <NewTransactionDialog />
+        {/* <NewTransactionDialog /> */}
       </div>
       <AccountTransactionList
         userOps={userOps}

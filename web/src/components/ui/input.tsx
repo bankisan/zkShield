@@ -3,7 +3,7 @@ import * as React from "react";
 import { classNameMerge } from "@/utils/classNameMerge";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => {
@@ -15,7 +15,7 @@ after:pointer-events-none after:absolute after:inset-px after:rounded-[7px] afte
         >
           <input
             className={classNameMerge(
-              "relative text-sm text-neutral-200 bg-neutral-750 placeholder:text-neutral-500 px-3.5 py-2 rounded-lg border border-black/5 shadow-input shadow-black/10 !outline-none",
+              "relative text-sm text-neutral-600 bg-neutral-750 placeholder:text-neutral-500 px-3.5 py-2 rounded-lg border border-black/5 shadow-input shadow-black/10 !outline-none",
               className
             )}
             ref={ref}

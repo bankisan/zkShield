@@ -9,20 +9,16 @@ import Link from "next/link";
 
 const AccountList = (props: {
   accounts:
-    | (ShieldAccount & {
-        shield_account_addresses: [
-          {
-            count: number;
-          }
-        ];
-        shield_account_user_ops: [
-          {
-            count: number;
-          }
-        ];
-      })[]
-    | null;
+  | (ShieldAccount & {
+    shield_account_user_ops: [
+      {
+        count: number;
+      }
+    ];
+  })[]
+  | null;
 }) => {
+  console.log("Accounts:", props.accounts)
   const pathname = usePathname();
   return (
     <div>
@@ -38,13 +34,15 @@ const AccountList = (props: {
           >
             <CardHeader className={"font-semibold"}>{account.name}</CardHeader>
             <CardContent>
-            <div className={"text-sm mb-2"}>{account.address && `${account.address.substr(0, 16)}...`}</div>
+            {/* <div className={"text-sm mb-2"}>{account.address && `${account.address.substr(0, 20)}...`}</div> */}
               <div className={"flex flex-row min-w-[200px] justify-between"}>
-                <div className={"text-sm"}>{account.shield_account_user_ops[0].count} Txs / {account.shield_account_addresses[0].count} Signers
+                <div className={"text-sm"}>{account.shield_account_user_ops.length} Txs
                 </div>
-                <Badge variant={"outline"}>
-                  <div className={"uppercase"}>{account.status}</div>
-                </Badge>
+                {!account?.address && (
+                  <Badge variant={"outline"}>
+                    <div className={"uppercase"}>{account.status}</div>
+                  </Badge>
+                )}
               </div>
             </CardContent>
           </Card>

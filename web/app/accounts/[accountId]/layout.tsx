@@ -9,12 +9,12 @@ export default function Layout(props: {
   children: ReactNode;
 }) {
   return (
-    <Card className="flex flex-col flex-grow w-full">
+    <Card className="flex flex-col flex-grow w-full h-full">
       <CardContent className="mt-6">
         <Tabs defaultValue="overview" className="w-full">
           <div className="flex flex-row justify-between w-full">
             <div>{props.children}</div>
-            <TabsList>
+            <TabsList >
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="transactions">Transactions</TabsTrigger>
               <TabsTrigger value="invitations">Invitations</TabsTrigger>

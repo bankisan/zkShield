@@ -39,7 +39,6 @@ const UserOp = (
     <Card className="w-full mb-4">
       <CardHeader>Transaction {props.id}</CardHeader>
       <CardContent>
-        <div>Data</div>
         {to && <div>To: {to}</div>}
         {value != null && <div>Value: {String(value)}</div>}
       </CardContent>
@@ -74,7 +73,7 @@ export default function AccountTransactionList({
 }) {
   return (
     <div>
-      <div className="flex gap-2 overflow-hidden">
+      <div className="flex flex-col gap-2 overflow-hidden w-full">
         <ul>
           {userOps?.map((userOp, i) => (
             <UserOp
