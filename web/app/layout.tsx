@@ -12,6 +12,8 @@ import { createServerComponentClient } from "@/utils/createServerComponentClient
 import { Database } from "@/utils/db";
 import { Toaster } from "@/components/ui/toaster";
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: "zkShield",
   description: "Private multisig with hidden owners",

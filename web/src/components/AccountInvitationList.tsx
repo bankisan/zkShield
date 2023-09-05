@@ -9,9 +9,7 @@ const Invitation = (invitation: Invitation) => {
       <CardHeader>{invitation.recipient_address}</CardHeader>
       <CardContent>
         <div className={"flex flex-row min-w-[200px] justify-between"}>
-          <div className={"text-sm"}>
-            Inviter {invitation.inviter_address}
-          </div>
+          <div className={"text-sm"}>Inviter {invitation.inviter_address}</div>
           <Badge variant={"outline"} className={"uppercase"}>
             <div>{invitation.status}</div>
           </Badge>

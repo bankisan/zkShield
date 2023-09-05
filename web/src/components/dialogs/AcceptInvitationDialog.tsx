@@ -17,7 +17,7 @@ import { Database } from "@/utils/db";
 import { useCallback, useState } from "react";
 import { useFormState } from "@/hooks/useFormState";
 import { useToast } from "@/components/ui/use-toast";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Invitation } from "@/types";
 
@@ -29,6 +29,7 @@ export const AcceptInvitationDialog = ({
   invitation: Invitation | null;
 }) => {
   const supabase = useClientSupabase<Database>();
+  const router = useRouter();
   const { toast } = useToast();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -94,6 +95,7 @@ export const AcceptInvitationDialog = ({
       });
 
       onOpenChange(false);
+      router.refresh();
     } catch (e) {
       setErrorMessage(e as string);
     }

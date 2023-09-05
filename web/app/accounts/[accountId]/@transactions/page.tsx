@@ -9,6 +9,8 @@ import { cookies } from "next/headers";
 import { createPublicClient, getContract, http, type Hex } from "viem";
 import { foundry } from "viem/chains";
 
+export const dynamic = 'force-dynamic'
+
 const publicClient = createPublicClient({
   chain: foundry,
   transport: http(),

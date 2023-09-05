@@ -27,7 +27,7 @@ const InvitationList = ({
       <ul>
         {invitations &&
           invitations.map((invitation, i) => (
-            <Card key={i} className="mb-4 hover:bg-muted hover:cursor-pointer" onClick={() => {
+            <Card key={i} className="mb-4 hover:bg-muted hover:cursor-pointer w-full" onClick={() => {
               setSelectedInvitation(invitation);
               setInvitationDialogOpen(true);
             }}>

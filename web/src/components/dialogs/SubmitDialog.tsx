@@ -15,6 +15,7 @@ import { Database } from "@/utils/db";
 import { useCallback, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { ShieldAccountUserOp } from "@/types";
+import { useRouter } from "next/navigation";
 
 export const SubmitDialog = ({
   userOp,
@@ -24,6 +25,7 @@ export const SubmitDialog = ({
   enabled: boolean;
 }) => {
   const supabase = useClientSupabase<Database>();
+  const router = useRouter();
   const { toast } = useToast();
 
   // Dialog / Form State
@@ -33,7 +35,7 @@ export const SubmitDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = useCallback(async () => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     setErrorMessage(null);
     try {
       if (!supabase) {
@@ -58,10 +60,11 @@ export const SubmitDialog = ({
         title: "User operation successfully submitted!",
       });
       setOpen(false);
+      router.refresh();
     } catch (e) {
       setErrorMessage(e as string);
     }
-  }, [supabase, setErrorMessage, setOpen, toast, userOp]);
+  }, [supabase, setErrorMessage, setOpen, toast, userOp, router]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -81,8 +84,11 @@ export const SubmitDialog = ({
           </div>
         )}
         <DialogFooter>
-          <Button onClick={() => submit().finally(() => setIsSubmitting(false))} disabled={!enabled || isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+          <Button
+            onClick={() => submit().finally(() => setIsSubmitting(false))}
+            disabled={!enabled || isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>

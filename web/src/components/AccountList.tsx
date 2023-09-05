@@ -18,7 +18,6 @@ const AccountList = (props: {
   })[]
   | null;
 }) => {
-  console.log("Accounts:", props.accounts)
   const pathname = usePathname();
   return (
     <div>

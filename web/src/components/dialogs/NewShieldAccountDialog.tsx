@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 export const NewShieldAccountDialog = () => {
   const supabase = useClientSupabase<Database>();
   const router = useRouter();
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const formState = useFormState<{ name: string }>(
@@ -93,13 +93,11 @@ export const NewShieldAccountDialog = () => {
         title: "Successfully created zkShield account!",
       });
       setOpen(false);
-
       router.refresh();
-
     } catch (e) {
       setErrorMessage(e as string);
     }
-  }, [supabase, formState, setErrorMessage, setOpen, toast]);
+  }, [supabase, formState, setErrorMessage, setOpen, toast, router]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

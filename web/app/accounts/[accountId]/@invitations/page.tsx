@@ -4,6 +4,8 @@ import { createServerComponentClient } from "@/utils/createServerComponentClient
 import { NewInvitationDialog } from "@/components/dialogs/NewInvitationDialog";
 import AccountInvitationList from "@/components/AccountInvitationList";
 
+export const dynamic = 'force-dynamic'
+
 export default async function Page({
   params: { accountId },
 }: {
