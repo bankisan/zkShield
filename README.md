@@ -12,6 +12,8 @@
 
 **zkShield** is a private multisig that uses zero-knowledge proofs and account abstraction (ERC-4337) to hide the account owners. Owners create a `ShieldAccount` multisig using existing wallets (i.e. Metamask, Rainbow, etc.) but, on-chain, their addresses and access will be hidden from the public. Once deployed, owners will be able to privately define member access, rotate owner keys, and execute m-of-n threshold transactions.
 
+You can read the [accompanying paper](./PAPER.md) to learn more about the scheme.
+
 **Current status:** 🛠 In devnet 🛠
 
 ### How does it work?
