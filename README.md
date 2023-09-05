@@ -12,7 +12,7 @@
 
 **zkShield** is a private multisig that uses zero-knowledge proofs and account abstraction (ERC-4337) to hide the account owners. Owners create a `ShieldAccount` multisig using existing wallets (i.e. Metamask, Rainbow, etc.) but, on-chain, their addresses and access will be hidden from the public. Once deployed, owners will be able to privately define member access, rotate owner keys, and execute m-of-n threshold transactions.
 
-**Current status:** 🛠 In development 🛠
+**Current status:** 🛠 In devnet 🛠
 
 ### How does it work?
 
@@ -32,15 +32,60 @@ Here's a breakdown of the different techniques and technologies used to achieve 
 
 - https://eips.ethereum.org/EIPS/eip-4337
 
+### Setup
+
+You can run the project locally if you have [foundry](https://github.com/foundry-rs/foundry) and [nextjs](https://nextjs.org/) installed.  You also need to have a [supabase account](https://supabase.com/) set up and have the supabase CLI installed. The frontend uses [walletconnect](https://walletconnect.com/) v2 so you'll have to get an API key from there as well.
+
+To begin, run:
+
+```bash
+yarn install
+```
+
+#### Config
+
+In the `web` directory, create a `.env.local` file with the following variables and fill them in with your credentials:
+```
+NEXT_WALLET_CONNECT_PROJECT_ID=<your wallet connect project id>
+SESSION_SECRET=<some random string>
+NEXT_PUBLIC_SUPABASE_URL=""
+NEXT_PUBLIC_SUPABASE_ANON_KEY=""
+SUPABASE_SERVICE_KEY=""
+SUPABASE_JWT=""
+````
+
+Run the migration against your supabase instance.
+
+#### Running devnet
+
+First, you'll need to run a local version of `anvil`. In the terminal, run:
+
+```bash
+anvil
+```
+
+Next, you'll need to deploy some helper contracts and the factory contract. In a new terminal, run:
+```bash
+yarn deploy:dev
+```
+
+With your devnet running, you can then run the frontend locally. In the terminal, run:
+
+```bash
+yarn workspace web dev
+```
+
+Now, you can navigate to `http://localhost:3000` to see the frontend and create a `ShieldAccount`!.
+
+
 ### Roadmap
 
-- [ ] Expanded documentation on setup and testing
-- [ ] Account abstraction improvements
+- [x] Expanded documentation on setup and testing
+- [x] Account abstraction improvements
   - [x] Factory contract that deploys the account
-  - [ ] Improved gas estimations
-  - [ ] ERC-1271 signature
+  - [x] Improved gas estimations
   - [x] Account can receive ERC-721, ERC-1155, and ERC-777 tokens
-- [ ] Frontend UI to create and manage a ShieldAccount
+- [x] Frontend UI to create and manage a ShieldAccount
 - [ ] Deploy to testnets
 - [ ] Deploy to mainnets
 

@@ -33,15 +33,12 @@ const AccountList = (props: {
           >
             <CardHeader className={"font-semibold"}>{account.name}</CardHeader>
             <CardContent>
-            {/* <div className={"text-sm mb-2"}>{account.address && `${account.address.substr(0, 20)}...`}</div> */}
               <div className={"flex flex-row min-w-[200px] justify-between"}>
-                <div className={"text-sm"}>{account.shield_account_user_ops.length} Txs
-                </div>
-                {!account?.address && (
+                {!account?.address ? (
                   <Badge variant={"outline"}>
                     <div className={"uppercase"}>{account.status}</div>
                   </Badge>
-                )}
+                ) : (<div className={"text-sm mb-2"}>{account.address && `${account.address.slice(0, 20)}...`}</div>)}
               </div>
             </CardContent>
           </Card>
