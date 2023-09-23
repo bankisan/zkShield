@@ -44,12 +44,18 @@ To begin, run:
 yarn install
 ```
 
+Once that has completed, `cd` into the `contracts/` directory and run:
+
+```bash
+forge install
+```
+
 #### Config
 
 In the `web` directory, create a `.env.local` file with the following variables and fill them in with your credentials:
 ```
 NEXT_WALLET_CONNECT_PROJECT_ID=<your wallet connect project id>
-SESSION_SECRET=<some random string>
+SESSION_SECRET=<some random 32 bytes string>
 NEXT_PUBLIC_SUPABASE_URL=""
 NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 SUPABASE_SERVICE_KEY=""
